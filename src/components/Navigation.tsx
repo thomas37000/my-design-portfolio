@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Menu, X, LogOut, Settings } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import { ThemeToggle } from "./ThemeToggle";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -73,6 +74,8 @@ const Navigation = () => {
             >
               Contact
             </button>
+            
+            <ThemeToggle />
             
             {user ? (
               <div className="flex gap-2 items-center">
@@ -150,6 +153,10 @@ const Navigation = () => {
             >
               Contact
             </button>
+            
+            <div className="pt-2 border-t border-border">
+              <ThemeToggle />
+            </div>
             
             {user ? (
               <>
