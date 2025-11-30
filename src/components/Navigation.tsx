@@ -1,10 +1,14 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut, Settings } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 const Navigation = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { user, isAdmin, signOut } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -22,6 +26,11 @@ const Navigation = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await signOut();
+    navigate("/");
+  };
+
   return (
     <nav
       className={`fixed top-0 w-full z-50 transition-all duration-300 ${
@@ -33,7 +42,7 @@ const Navigation = () => {
           <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex gap-8">
+          <div className="hidden md:flex gap-8 items-center">
             <button
               onClick={() => scrollToSection("home")}
               className="text-foreground hover:text-primary transition-colors"
@@ -64,6 +73,37 @@ const Navigation = () => {
             >
               Contact
             </button>
+            
+            {user ? (
+              <div className="flex gap-2 items-center">
+                {isAdmin && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate("/admin")}
+                  >
+                    <Settings className="h-4 w-4 mr-1" />
+                    Admin
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                >
+                  <LogOut className="h-4 w-4 mr-1" />
+                  Déconnexion
+                </Button>
+              </div>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/auth")}
+              >
+                Connexion
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -110,6 +150,49 @@ const Navigation = () => {
             >
               Contact
             </button>
+            
+            {user ? (
+              <>
+                {isAdmin && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigate("/admin");
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="justify-start"
+                  >
+                    <Settings className="h-4 w-4 mr-2" />
+                    Admin
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    handleLogout();
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className="justify-start"
+                >
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Déconnexion
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  navigate("/auth");
+                  setIsMobileMenuOpen(false);
+                }}
+                className="justify-start"
+              >
+                Connexion
+              </Button>
+            )}
           </div>
         )}
       </div>
