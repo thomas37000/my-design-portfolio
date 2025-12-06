@@ -12,7 +12,7 @@ interface ProjectCardProps {
   organisme: string;
 }
 
-const ProjectCard = ({ description, technos, titre, lien_url, github, img, organisme}: ProjectCardProps) => {
+const ProjectCard = ({ description, technos, titre, lien_url, github, img, organisme }: ProjectCardProps) => {
   return (
     <Card className="overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
       <div className="relative overflow-hidden aspect-video">
@@ -35,14 +35,14 @@ const ProjectCard = ({ description, technos, titre, lien_url, github, img, organ
           >
             Démo Link
           </Button> : null}
-          <Button
+          {github !== null ? <Button
             onClick={() => window.open(`${github}`, "_blank")}
             size="lg"
             className="group"
             variant="outline"
           >
             Github
-          </Button>
+          </Button> : null}
         </div>
         <div className="flex flex-wrap gap-2">
           {technos?.map((techno, index) => (
