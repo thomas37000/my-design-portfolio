@@ -1,32 +1,40 @@
+import { useState, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import ProjectCard from "./ProjectCard";
-import project1 from "@/assets/project1.jpg";
-import project2 from "@/assets/project2.jpg";
-import project3 from "@/assets/project3.jpg";
+import { Dev_project } from "@/types";
+
+
 
 const Projects = () => {
-  const projects = [
-    {
-      title: "Site Web E-commerce",
-      description:
-        "Design moderne et épuré pour une plateforme e-commerce avec une expérience utilisateur optimisée.",
-      image: project1,
-      tags: ["UI/UX", "Web Design", "React"],
-    },
-    {
-      title: "Application Mobile",
-      description:
-        "Interface intuitive pour une application mobile de commerce, alliant élégance et performance.",
-      image: project2,
-      tags: ["Mobile", "UI Design", "Prototype"],
-    },
-    {
-      title: "Identité de Marque",
-      description:
-        "Création complète d'une identité visuelle incluant logo, palette de couleurs et guidelines.",
-      image: project3,
-      tags: ["Branding", "Design System", "Logo"],
-    },
-  ];
+  const [projects, setProjects] = useState<Dev_project[]>([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+  console.log(projects);
+
+  useEffect(() => {
+    getProducts();
+  }, []);
+
+  async function getProducts() {
+    try {
+      const { data, error } = await supabase
+        .from("dev_projects")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error(error);
+        setError(error);
+      } else {
+        setProjects(data as unknown as Dev_project[]);
+      }
+    } catch (error) {
+      console.error(error);
+      setError(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <section id="projects" className="py-20">
