@@ -7,6 +7,7 @@ export const useAuth = () => {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminChecked, setAdminChecked] = useState(false);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -22,16 +23,19 @@ export const useAuth = () => {
           }, 0);
         } else {
           setIsAdmin(false);
+          setAdminChecked(true);
         }
       }
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        checkAdminRole(session.user.id);
+        await checkAdminRole(session.user.id);
+      } else {
+        setAdminChecked(true);
       }
       setLoading(false);
     });
@@ -40,17 +44,21 @@ export const useAuth = () => {
   }, []);
 
   const checkAdminRole = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("user_roles")
-      .select("role")
-      .eq("user_id", userId)
-      .eq("role", "admin")
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId)
+        .eq("role", "admin")
+        .single();
 
-    if (!error && data) {
-      setIsAdmin(true);
-    } else {
-      setIsAdmin(false);
+      if (!error && data) {
+        setIsAdmin(true);
+      } else {
+        setIsAdmin(false);
+      }
+    } finally {
+      setAdminChecked(true);
     }
   };
 
@@ -83,7 +91,7 @@ export const useAuth = () => {
   return {
     user,
     session,
-    loading,
+    loading: loading || !adminChecked,
     isAdmin,
     signIn,
     signUp,
