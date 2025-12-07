@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import ProjectCard from "./ProjectCard";
 import { Dev_project } from "@/types";
@@ -12,10 +12,10 @@ const Projects = () => {
   console.log(projects);
 
   useEffect(() => {
-    getProducts();
+    getProjects();
   }, []);
 
-  async function getProducts() {
+  async function getProjects() {
     try {
       const { data, error } = await supabase
         .from("dev_projects")
@@ -43,15 +43,18 @@ const Projects = () => {
           Mes Projets
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {projects.map((project, index) => (
-            <div
-              key={index}
-              className="animate-fade-in"
-              style={{ animationDelay: `${index * 0.1}s` }}
-            >
-              <ProjectCard {...project} />
-            </div>
-          ))}
+          <Suspense fallback={<p>Loading...</p>}>
+            {projects.map((project, index) => (
+              <div
+                key={index}
+                className="animate-fade-in"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <ProjectCard {...project} />
+              </div>
+            ))}
+          </Suspense>
+
         </div>
       </div>
     </section>
