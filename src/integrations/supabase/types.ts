@@ -555,6 +555,10 @@ export type Database = {
     }
     Functions: {
       get_complete_schema: { Args: never; Returns: Json }
+      get_current_user_role: {
+        Args: never
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
