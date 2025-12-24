@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import ProjectManager from "@/components/admin/ProjectManager";
 import ContactMessages from "@/components/admin/ContactMessages";
+import SkillsManager from "@/components/admin/SkillsManager";
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -47,9 +48,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dev" className="w-full">
-          <TabsList className="grid w-full max-w-lg grid-cols-3">
+          <TabsList className="grid w-full max-w-2xl grid-cols-4">
             <TabsTrigger value="dev">Projets Dev</TabsTrigger>
             <TabsTrigger value="design">Projets Design</TabsTrigger>
+            <TabsTrigger value="skills">Compétences</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
 
@@ -77,6 +79,20 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <ProjectManager projectType="design" />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="skills" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Compétences</CardTitle>
+                <CardDescription>
+                  Gérez vos compétences techniques et outils
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SkillsManager />
               </CardContent>
             </Card>
           </TabsContent>

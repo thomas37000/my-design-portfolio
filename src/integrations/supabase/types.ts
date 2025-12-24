@@ -460,6 +460,30 @@ export type Database = {
         }
         Relationships: []
       }
+      skills: {
+        Row: {
+          category: string
+          created_at: string
+          icon: string | null
+          id: number
+          name: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          icon?: string | null
+          id?: number
+          name: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          icon?: string | null
+          id?: number
+          name?: string
+        }
+        Relationships: []
+      }
       surgeles_produits_frais: {
         Row: {
           created_at: string
