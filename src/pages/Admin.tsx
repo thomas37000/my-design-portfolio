@@ -6,6 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import ProjectManager from "@/components/admin/ProjectManager";
+import ContactMessages from "@/components/admin/ContactMessages";
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -46,9 +47,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dev" className="w-full">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
+          <TabsList className="grid w-full max-w-lg grid-cols-3">
             <TabsTrigger value="dev">Projets Dev</TabsTrigger>
             <TabsTrigger value="design">Projets Design</TabsTrigger>
+            <TabsTrigger value="messages">Messages</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dev" className="mt-6">
@@ -75,6 +77,20 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <ProjectManager projectType="design" />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="messages" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Messages de Contact</CardTitle>
+                <CardDescription>
+                  Consultez et gérez les messages reçus via le formulaire de contact
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ContactMessages />
               </CardContent>
             </Card>
           </TabsContent>

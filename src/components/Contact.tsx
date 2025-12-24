@@ -4,22 +4,48 @@ import { Textarea } from "./ui/textarea";
 import { Mail, MapPin, Phone } from "lucide-react";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    subject: "",
     message: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Message envoyé !",
-      description: "Merci pour votre message. Je vous répondrai bientôt.",
-    });
-    setFormData({ name: "", email: "", message: "" });
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.from("contact").insert({
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        subject: formData.subject.trim() || "Sans objet",
+        message: formData.message.trim(),
+        status: "unread",
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Message envoyé !",
+        description: "Merci pour votre message. Je vous répondrai bientôt.",
+      });
+      setFormData({ name: "", email: "", subject: "", message: "" });
+    } catch (error) {
+      console.error("Error sending message:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'envoyer le message. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -84,6 +110,7 @@ const Contact = () => {
                   setFormData({ ...formData, name: e.target.value })
                 }
                 required
+                maxLength={100}
               />
             </div>
             <div>
@@ -95,6 +122,18 @@ const Contact = () => {
                   setFormData({ ...formData, email: e.target.value })
                 }
                 required
+                maxLength={255}
+              />
+            </div>
+            <div>
+              <Input
+                type="text"
+                placeholder="Sujet"
+                value={formData.subject}
+                onChange={(e) =>
+                  setFormData({ ...formData, subject: e.target.value })
+                }
+                maxLength={200}
               />
             </div>
             <div>
@@ -106,10 +145,11 @@ const Contact = () => {
                 }
                 rows={6}
                 required
+                maxLength={2000}
               />
             </div>
-            <Button type="submit" size="lg" className="w-full">
-              Envoyer le message
+            <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? "Envoi en cours..." : "Envoyer le message"}
             </Button>
           </form>
         </div>
