@@ -90,6 +90,36 @@ export type Database = {
           },
         ]
       }
+      contact: {
+        Row: {
+          created_at: string
+          email: string
+          id: number
+          message: string
+          name: string
+          status: string | null
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: number
+          message: string
+          name: string
+          status?: string | null
+          subject: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: number
+          message?: string
+          name?: string
+          status?: string | null
+          subject?: string
+        }
+        Relationships: []
+      }
       dépenses_année: {
         Row: {
           année: number | null
