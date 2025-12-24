@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Trash2, Mail, Check } from "lucide-react";
+import { Trash2, Mail, Check, Reply } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface ContactMessage {
@@ -91,6 +91,19 @@ const ContactMessages = () => {
     }
   };
 
+  const replyToMessage = (message: ContactMessage) => {
+    const subject = encodeURIComponent(`Re: ${message.subject}`);
+    const body = encodeURIComponent(
+      `\n\n---\nMessage original de ${message.name} :\n${message.message}`
+    );
+    window.open(`mailto:${message.email}?subject=${subject}&body=${body}`, "_blank");
+    
+    // Mark as read after replying
+    if (message.status === "unread") {
+      markAsRead(message.id);
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-8">Chargement...</div>;
   }
@@ -120,6 +133,14 @@ const ContactMessages = () => {
                 <p className="text-sm text-muted-foreground">{message.email}</p>
               </div>
               <div className="flex gap-2">
+                <Button
+                  variant="secondary"
+                  size="icon"
+                  onClick={() => replyToMessage(message)}
+                  title="Répondre"
+                >
+                  <Reply className="h-4 w-4" />
+                </Button>
                 {message.status === "unread" && (
                   <Button
                     variant="outline"
