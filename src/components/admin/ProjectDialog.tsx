@@ -6,8 +6,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 import { useToast } from "@/hooks/use-toast";
 import { z } from "zod";
+
+interface Skill {
+  id: number;
+  name: string;
+  category: string;
+}
 
 interface ProjectDialogProps {
   open: boolean;
@@ -42,7 +49,32 @@ const ProjectDialog = ({ open, onOpenChange, project, projectType, onSave }: Pro
     IA: false,
   });
   const [saving, setSaving] = useState(false);
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [selectedSkillIds, setSelectedSkillIds] = useState<number[]>([]);
   const { toast } = useToast();
+
+  // Fetch all skills
+  useEffect(() => {
+    const fetchSkills = async () => {
+      const { data } = await supabase.from("skills").select("id, name, category").order("category").order("name");
+      if (data) setSkills(data);
+    };
+    fetchSkills();
+  }, []);
+
+  // Fetch project skills when editing
+  useEffect(() => {
+    const fetchProjectSkills = async () => {
+      if (!project || !open) {
+        setSelectedSkillIds([]);
+        return;
+      }
+      const junctionTable = projectType === "dev" ? "dev_project_skills" : "designer_project_skills";
+      const { data } = await supabase.from(junctionTable).select("skill_id").eq("project_id", project.id);
+      if (data) setSelectedSkillIds(data.map((d) => d.skill_id));
+    };
+    fetchProjectSkills();
+  }, [project, open, projectType]);
 
   useEffect(() => {
     if (project) {
@@ -78,12 +110,18 @@ const ProjectDialog = ({ open, onOpenChange, project, projectType, onSave }: Pro
     }
   }, [project]);
 
+  const toggleSkill = (skillId: number) => {
+    setSelectedSkillIds((prev) =>
+      prev.includes(skillId) ? prev.filter((id) => id !== skillId) : [...prev, skillId]
+    );
+  };
+
   const handleSave = async () => {
     setSaving(true);
     const tableName = projectType === "dev" ? "dev_projects" : "designer_projects";
+    const junctionTable = projectType === "dev" ? "dev_project_skills" : "designer_project_skills";
 
     try {
-      // Validate basic fields
       projectSchema.parse({
         titre: formData.titre,
         nom_projet: formData.nom_projet,
@@ -106,53 +144,49 @@ const ProjectDialog = ({ open, onOpenChange, project, projectType, onSave }: Pro
 
       if (projectType === "dev") {
         dataToSave.github = formData.github.trim() || null;
-        dataToSave.technos = formData.technos
-          .split(",")
-          .map((t) => t.trim())
-          .filter((t) => t);
+        dataToSave.technos = formData.technos.split(",").map((t) => t.trim()).filter((t) => t);
       } else {
-        dataToSave.logiciels = formData.logiciels
-          .split(",")
-          .map((l) => l.trim())
-          .filter((l) => l);
-        dataToSave.tags = formData.tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter((t) => t);
+        dataToSave.logiciels = formData.logiciels.split(",").map((l) => l.trim()).filter((l) => l);
+        dataToSave.tags = formData.tags.split(",").map((t) => t.trim()).filter((t) => t);
       }
 
-      let error;
+      let projectId = project?.id;
+
       if (project) {
-        ({ error } = await supabase.from(tableName).update(dataToSave).eq("id", project.id));
+        const { error } = await supabase.from(tableName).update(dataToSave).eq("id", project.id);
+        if (error) throw error;
       } else {
-        ({ error } = await supabase.from(tableName).insert([dataToSave]));
+        const { data, error } = await supabase.from(tableName).insert([dataToSave]).select("id").single();
+        if (error) throw error;
+        projectId = data.id;
       }
 
-      if (error) throw error;
+      // Update skills: delete existing, insert new
+      await supabase.from(junctionTable).delete().eq("project_id", projectId);
+      if (selectedSkillIds.length > 0) {
+        const skillInserts = selectedSkillIds.map((skill_id) => ({ project_id: projectId, skill_id }));
+        const { error: skillError } = await supabase.from(junctionTable).insert(skillInserts);
+        if (skillError) throw skillError;
+      }
 
-      toast({
-        title: "Succès",
-        description: project ? "Projet mis à jour" : "Projet créé",
-      });
+      toast({ title: "Succès", description: project ? "Projet mis à jour" : "Projet créé" });
       onSave();
     } catch (error) {
       if (error instanceof z.ZodError) {
-        toast({
-          title: "Erreur de validation",
-          description: error.errors[0].message,
-          variant: "destructive",
-        });
+        toast({ title: "Erreur de validation", description: error.errors[0].message, variant: "destructive" });
       } else {
-        toast({
-          title: "Erreur",
-          description: "Impossible de sauvegarder le projet",
-          variant: "destructive",
-        });
+        toast({ title: "Erreur", description: "Impossible de sauvegarder le projet", variant: "destructive" });
       }
     } finally {
       setSaving(false);
     }
   };
+
+  const groupedSkills = skills.reduce((acc, skill) => {
+    if (!acc[skill.category]) acc[skill.category] = [];
+    acc[skill.category].push(skill);
+    return acc;
+  }, {} as Record<string, Skill[]>);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -288,6 +322,34 @@ const ProjectDialog = ({ open, onOpenChange, project, projectType, onSave }: Pro
               onCheckedChange={(checked) => setFormData({ ...formData, IA: checked })}
             />
             <Label htmlFor="IA">Utilise l'IA</Label>
+          </div>
+
+          <div>
+            <Label>Compétences associées</Label>
+            <div className="mt-2 max-h-48 overflow-y-auto border rounded-md p-3 space-y-3">
+              {Object.entries(groupedSkills).map(([category, categorySkills]) => (
+                <div key={category}>
+                  <p className="text-sm font-medium text-muted-foreground mb-1">{category}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {categorySkills.map((skill) => (
+                      <label
+                        key={skill.id}
+                        className="flex items-center gap-1.5 text-sm cursor-pointer"
+                      >
+                        <Checkbox
+                          checked={selectedSkillIds.includes(skill.id)}
+                          onCheckedChange={() => toggleSkill(skill.id)}
+                        />
+                        {skill.name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+              {skills.length === 0 && (
+                <p className="text-sm text-muted-foreground">Aucune compétence disponible</p>
+              )}
+            </div>
           </div>
         </div>
 
