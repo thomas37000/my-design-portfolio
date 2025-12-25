@@ -168,6 +168,42 @@ export type Database = {
         }
         Relationships: []
       }
+      designer_project_skills: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: number
+          skill_id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: number
+          skill_id: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: number
+          skill_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "designer_project_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "designer_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "designer_project_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       designer_projects: {
         Row: {
           created_at: string
@@ -212,6 +248,42 @@ export type Database = {
           titre?: string | null
         }
         Relationships: []
+      }
+      dev_project_skills: {
+        Row: {
+          created_at: string
+          id: string
+          project_id: number
+          skill_id: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          project_id: number
+          skill_id: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          project_id?: number
+          skill_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dev_project_skills_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "dev_projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "dev_project_skills_skill_id_fkey"
+            columns: ["skill_id"]
+            isOneToOne: false
+            referencedRelation: "skills"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       dev_projects: {
         Row: {
