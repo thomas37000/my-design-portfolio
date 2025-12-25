@@ -1,7 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Badge } from "./ui/badge";
 import { Code, Palette, Database, Wrench, Layers, Server, MoreHorizontal } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 interface Skill {
   id: number;
@@ -23,6 +27,10 @@ const categoryIcons: Record<string, React.ReactNode> = {
 const Skills = () => {
   const [groupedSkills, setGroupedSkills] = useState<Record<string, Skill[]>>({});
   const [loading, setLoading] = useState(true);
+  
+  const sectionRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchSkills = async () => {
@@ -49,6 +57,48 @@ const Skills = () => {
 
   const categories = Object.keys(groupedSkills);
 
+  useEffect(() => {
+    if (loading || categories.length === 0) return;
+
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        titleRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        gridRef.current?.children || [],
+        { opacity: 0, y: 40, scale: 0.95 },
+        {
+          opacity: 1,
+          y: 0,
+          scale: 1,
+          duration: 0.6,
+          stagger: 0.1,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: gridRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, [loading, categories]);
+
   if (loading) {
     return (
       <section id="skills" className="py-20 bg-muted/30">
@@ -72,17 +122,16 @@ const Skills = () => {
   }
 
   return (
-    <section id="skills" className="py-20 bg-muted/30">
+    <section ref={sectionRef} id="skills" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold mb-12 text-center animate-fade-in">
+        <h2 ref={titleRef} className="text-4xl font-bold mb-12 text-center opacity-0">
           Compétences
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {categories.map((category, index) => (
+        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {categories.map((category) => (
             <div
               key={category}
-              className="animate-fade-in p-6 rounded-lg bg-card hover:shadow-lg transition-shadow"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="p-6 rounded-lg bg-card hover:shadow-lg transition-shadow opacity-0"
             >
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-primary text-primary-foreground rounded-lg">

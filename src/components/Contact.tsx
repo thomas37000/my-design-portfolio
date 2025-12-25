@@ -1,10 +1,14 @@
+import { useEffect, useRef, useState } from "react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Textarea } from "./ui/textarea";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+gsap.registerPlugin(ScrollTrigger);
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -15,6 +19,65 @@ const Contact = () => {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { toast } = useToast();
+
+  const sectionRef = useRef<HTMLElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+  const infoRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      gsap.fromTo(
+        titleRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        infoRef.current,
+        { opacity: 0, x: -50 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: infoRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+
+      gsap.fromTo(
+        formRef.current,
+        { opacity: 0, x: 50 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.8,
+          ease: "power2.out",
+          scrollTrigger: {
+            trigger: formRef.current,
+            start: "top 85%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,14 +112,14 @@ const Contact = () => {
   };
 
   return (
-    <section id="contact" className="py-20">
+    <section ref={sectionRef} id="contact" className="py-20">
       <div className="container mx-auto px-4">
-        <h2 className="text-4xl font-bold mb-12 text-center animate-fade-in">
+        <h2 ref={titleRef} className="text-4xl font-bold mb-12 text-center opacity-0">
           Me Contacter
         </h2>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
           {/* Contact Info */}
-          <div className="space-y-8 animate-fade-in">
+          <div ref={infoRef} className="space-y-8 opacity-0">
             <div>
               <h3 className="text-2xl font-bold mb-6">Restons en contact</h3>
               <p className="text-muted-foreground mb-8">
@@ -97,9 +160,9 @@ const Contact = () => {
 
           {/* Contact Form */}
           <form
+            ref={formRef}
             onSubmit={handleSubmit}
-            className="space-y-6 animate-fade-in"
-            style={{ animationDelay: "0.2s" }}
+            className="space-y-6 opacity-0"
           >
             <div>
               <Input
