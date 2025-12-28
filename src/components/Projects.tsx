@@ -42,13 +42,11 @@ const Projects = () => {
   }
 
   return (
-    <div id="projects">
-      <HorizontalGallery title="Mes Projets">
-        {projects.map((project) => (
-          <ProjectCard key={project.id} {...project} />
-        ))}
-      </HorizontalGallery>
-    </div>
+    <HorizontalGallery id="projects" title="Mes Projets">
+      {projects.map((project) => (
+        <ProjectCard key={project.id} {...project} />
+      ))}
+    </HorizontalGallery>
   );
 };
 
