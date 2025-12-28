@@ -1,68 +1,16 @@
-import { useState, useEffect, useRef, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import ProjectCard from "./ProjectCard";
 import { Dev_project } from "@/types";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-
-gsap.registerPlugin(ScrollTrigger);
+import HorizontalGallery from "./HorizontalGallery";
 
 const Projects = () => {
   const [projects, setProjects] = useState<Dev_project[]>([]);
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-  const sectionRef = useRef<HTMLElement>(null);
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const gridRef = useRef<HTMLDivElement>(null);
-
-  console.log(projects);
 
   useEffect(() => {
     getProjects();
   }, []);
-
-  useEffect(() => {
-    if (loading || projects.length === 0) return;
-
-    const ctx = gsap.context(() => {
-      gsap.fromTo(
-        titleRef.current,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 0.8,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 80%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-
-      gsap.fromTo(
-        gridRef.current?.children || [],
-        { opacity: 0, y: 40, scale: 0.95 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 0.6,
-          stagger: 0.1,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: gridRef.current,
-            start: "top 85%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, [loading, projects]);
 
   async function getProjects() {
     try {
@@ -73,35 +21,34 @@ const Projects = () => {
 
       if (error) {
         console.error(error);
-        setError(error);
       } else {
         setProjects(data as unknown as Dev_project[]);
       }
     } catch (error) {
       console.error(error);
-      setError(error);
     } finally {
       setLoading(false);
     }
   }
 
-  return (
-    <section ref={sectionRef} id="projects" className="py-20">
-      <div className="container mx-auto px-4">
-        <h2 ref={titleRef} className="text-4xl font-bold mb-12 text-center opacity-0">
-          Mes Projets
-        </h2>
-        <div ref={gridRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <Suspense fallback={<p>Loading...</p>}>
-            {projects.map((project, index) => (
-              <div key={index} className="opacity-0">
-                <ProjectCard {...project} />
-              </div>
-            ))}
-          </Suspense>
+  if (loading) {
+    return (
+      <section id="projects" className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <p>Chargement...</p>
         </div>
-      </div>
-    </section>
+      </section>
+    );
+  }
+
+  return (
+    <div id="projects">
+      <HorizontalGallery title="Mes Projets">
+        {projects.map((project) => (
+          <ProjectCard key={project.id} {...project} />
+        ))}
+      </HorizontalGallery>
+    </div>
   );
 };
 
