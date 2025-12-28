@@ -1,6 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { User, Session } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+const ADMIN_SESSION_TIMEOUT = 60 * 60 * 1000; // 1 hour in milliseconds
 
 export const useAuth = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -8,6 +11,58 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminChecked, setAdminChecked] = useState(false);
+  const adminTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const adminLoginTimeRef = useRef<number | null>(null);
+
+  const clearAdminTimeout = useCallback(() => {
+    if (adminTimeoutRef.current) {
+      clearTimeout(adminTimeoutRef.current);
+      adminTimeoutRef.current = null;
+    }
+    adminLoginTimeRef.current = null;
+    localStorage.removeItem('admin_login_time');
+  }, []);
+
+  const autoLogoutAdmin = useCallback(async () => {
+    toast.warning("Session admin expirée. Déconnexion automatique.");
+    clearAdminTimeout();
+    await supabase.auth.signOut();
+  }, [clearAdminTimeout]);
+
+  const startAdminTimeout = useCallback((remainingTime?: number) => {
+    clearAdminTimeout();
+    
+    const timeout = remainingTime ?? ADMIN_SESSION_TIMEOUT;
+    adminLoginTimeRef.current = Date.now();
+    localStorage.setItem('admin_login_time', adminLoginTimeRef.current.toString());
+    
+    adminTimeoutRef.current = setTimeout(() => {
+      autoLogoutAdmin();
+    }, timeout);
+  }, [clearAdminTimeout, autoLogoutAdmin]);
+
+  // Check for existing admin session timeout on mount
+  useEffect(() => {
+    const storedLoginTime = localStorage.getItem('admin_login_time');
+    if (storedLoginTime && isAdmin) {
+      const loginTime = parseInt(storedLoginTime, 10);
+      const elapsed = Date.now() - loginTime;
+      const remaining = ADMIN_SESSION_TIMEOUT - elapsed;
+      
+      if (remaining <= 0) {
+        autoLogoutAdmin();
+      } else {
+        startAdminTimeout(remaining);
+      }
+    }
+  }, [isAdmin, autoLogoutAdmin, startAdminTimeout]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      clearAdminTimeout();
+    };
+  }, [clearAdminTimeout]);
 
   useEffect(() => {
     // Set up auth state listener FIRST
@@ -24,6 +79,7 @@ export const useAuth = () => {
         } else {
           setIsAdmin(false);
           setAdminChecked(true);
+          clearAdminTimeout();
         }
       }
     );
@@ -41,7 +97,7 @@ export const useAuth = () => {
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [clearAdminTimeout]);
 
   const checkAdminRole = async (userId: string) => {
     try {
@@ -54,8 +110,14 @@ export const useAuth = () => {
 
       if (!error && data) {
         setIsAdmin(true);
+        // Start timeout for admin users
+        const storedLoginTime = localStorage.getItem('admin_login_time');
+        if (!storedLoginTime) {
+          startAdminTimeout();
+        }
       } else {
         setIsAdmin(false);
+        clearAdminTimeout();
       }
     } finally {
       setAdminChecked(true);
@@ -84,6 +146,7 @@ export const useAuth = () => {
   };
 
   const signOut = async () => {
+    clearAdminTimeout();
     const { error } = await supabase.auth.signOut();
     return { error };
   };
