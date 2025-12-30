@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 interface FormData {
   name: string;
@@ -35,6 +36,22 @@ const ContactForm = forwardRef<HTMLFormElement>((_, ref) => {
     setIsSubmitting(true);
 
     try {
+      // Check rate limit first (5 requests per minute)
+      const rateLimitResult = await checkRateLimit({
+        endpoint: "contact-form",
+        maxRequests: 5,
+        windowMinutes: 1,
+      });
+
+      if (!rateLimitResult.allowed) {
+        toast({
+          title: "Trop de requêtes",
+          description: "Veuillez patienter avant de renvoyer un message.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { error } = await supabase.from("contact").insert({
         name: formData.name.trim(),
         email: formData.email.trim(),
