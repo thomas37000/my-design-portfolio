@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { checkRateLimit } from "@/lib/rateLimit";
-import { validateContactForm } from "@/lib/validation";
+import { validateContactForm, sanitizeInput } from "@/lib/validation";
 
 interface FormData {
   name: string;
@@ -37,7 +37,12 @@ const ContactForm = forwardRef<HTMLFormElement>((_, ref) => {
   const handleChange = (field: keyof FormData) => (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData((prev) => ({ ...prev, [field]: e.target.value }));
+    // Sanitize input in real-time (except email which needs special characters)
+    const value = field === "email" 
+      ? e.target.value 
+      : sanitizeInput(e.target.value);
+    
+    setFormData((prev) => ({ ...prev, [field]: value }));
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
