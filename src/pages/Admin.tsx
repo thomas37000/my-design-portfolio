@@ -8,6 +8,7 @@ import { Loader2 } from "lucide-react";
 import ProjectManager from "@/components/admin/ProjectManager";
 import ContactMessages from "@/components/admin/ContactMessages";
 import SkillsManager from "@/components/admin/SkillsManager";
+import SettingsManager from "@/components/admin/SettingsManager";
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -48,11 +49,12 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dev" className="w-full">
-          <TabsList className="grid w-full max-w-2xl grid-cols-4">
+          <TabsList className="grid w-full max-w-3xl grid-cols-5">
             <TabsTrigger value="dev">Projets Dev</TabsTrigger>
             <TabsTrigger value="design">Projets Design</TabsTrigger>
             <TabsTrigger value="skills">Compétences</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="settings">Paramètres</TabsTrigger>
           </TabsList>
 
           <TabsContent value="dev" className="mt-6">
@@ -107,6 +109,20 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <ContactMessages />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="settings" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Paramètres d'affichage</CardTitle>
+                <CardDescription>
+                  Configurez l'apparence et le comportement de votre portfolio
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <SettingsManager />
               </CardContent>
             </Card>
           </TabsContent>
