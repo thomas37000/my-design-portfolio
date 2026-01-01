@@ -120,6 +120,51 @@ export type Database = {
         }
         Relationships: []
       }
+      cv_data: {
+        Row: {
+          created_at: string
+          education: Json
+          email: string
+          experiences: Json
+          full_name: string
+          id: string
+          languages: Json
+          location: string | null
+          phone: string | null
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          education?: Json
+          email?: string
+          experiences?: Json
+          full_name?: string
+          id?: string
+          languages?: Json
+          location?: string | null
+          phone?: string | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          education?: Json
+          email?: string
+          experiences?: Json
+          full_name?: string
+          id?: string
+          languages?: Json
+          location?: string | null
+          phone?: string | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dépenses_année: {
         Row: {
           année: number | null

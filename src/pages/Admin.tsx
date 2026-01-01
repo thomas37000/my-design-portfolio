@@ -9,6 +9,7 @@ import ProjectManager from "@/components/admin/ProjectManager";
 import ContactMessages from "@/components/admin/ContactMessages";
 import SkillsManager from "@/components/admin/SkillsManager";
 import SettingsManager from "@/components/admin/SettingsManager";
+import CVManager from "@/components/admin/CVManager";
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -49,10 +50,11 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dev" className="w-full">
-          <TabsList className="grid w-full max-w-3xl grid-cols-5">
+          <TabsList className="grid w-full max-w-4xl grid-cols-6">
             <TabsTrigger value="dev">Projets Dev</TabsTrigger>
             <TabsTrigger value="design">Projets Design</TabsTrigger>
             <TabsTrigger value="skills">Compétences</TabsTrigger>
+            <TabsTrigger value="cv">CV</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="settings">Paramètres</TabsTrigger>
           </TabsList>
@@ -95,6 +97,20 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <SkillsManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="cv" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Mon CV</CardTitle>
+                <CardDescription>
+                  Éditez les informations de votre CV qui sera téléchargeable sur le site
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <CVManager />
               </CardContent>
             </Card>
           </TabsContent>

@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import CVDownload from "./CVDownload";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -74,6 +75,7 @@ const About = () => {
               meilleures pratiques du design moderne.
             </p>
           </div>
+          <CVDownload />
         </div>
       </div>
     </section>
