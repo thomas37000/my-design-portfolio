@@ -5,11 +5,13 @@ import { Dev_project } from "@/types";
 import HorizontalGallery from "./HorizontalGallery";
 import ProjectsGrid from "./ProjectsGrid";
 import { useDisplayMode } from "@/hooks/useDisplayMode";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const Projects = () => {
   const [projects, setProjects] = useState<Dev_project[]>([]);
   const [loading, setLoading] = useState(true);
   const { displayMode, loading: modeLoading } = useDisplayMode();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     getProjects();
@@ -48,7 +50,8 @@ const Projects = () => {
     <ProjectCard key={project.id} {...project} />
   ));
 
-  if (displayMode === "grid") {
+  // Force horizontal gallery on mobile, use grid only on desktop when setting is "grid"
+  if (displayMode === "grid" && !isMobile) {
     return (
       <ProjectsGrid id="projects" title="Mes Projets">
         {projectCards}
