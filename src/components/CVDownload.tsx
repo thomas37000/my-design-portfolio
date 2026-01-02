@@ -33,6 +33,7 @@ interface CVData {
   experiences: Experience[];
   education: Education[];
   languages: Language[];
+  cv_file_url: string | null;
 }
 
 const CVDownload = () => {
@@ -64,6 +65,7 @@ const CVDownload = () => {
           experiences: (data.experiences as unknown as Experience[]) || [],
           education: (data.education as unknown as Education[]) || [],
           languages: (data.languages as unknown as Language[]) || [],
+          cv_file_url: data.cv_file_url || null,
         });
       }
     } catch (error) {
@@ -75,6 +77,12 @@ const CVDownload = () => {
 
   const generatePDF = async () => {
     if (!cvData) return;
+
+    // If there's an uploaded PDF, open it directly
+    if (cvData.cv_file_url) {
+      window.open(cvData.cv_file_url, "_blank");
+      return;
+    }
 
     setGenerating(true);
 
@@ -188,7 +196,7 @@ const CVDownload = () => {
     );
   }
 
-  if (!cvData || !cvData.full_name) {
+  if (!cvData || (!cvData.full_name && !cvData.cv_file_url)) {
     return null;
   }
 
