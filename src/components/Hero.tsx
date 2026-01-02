@@ -2,13 +2,18 @@ import { useEffect, useRef } from "react";
 import { Button } from "./ui/button";
 import { ArrowDown } from "lucide-react";
 import gsap from "gsap";
+import { useContentSettings } from "@/hooks/useContentSettings";
 
 const Hero = () => {
+  const { content, loading } = useContentSettings();
   const titleRef = useRef<HTMLHeadingElement>(null);
   const subtitleRef = useRef<HTMLParagraphElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
+  const animationRan = useRef(false);
 
   useEffect(() => {
+    if (loading || animationRan.current) return;
+    
     const ctx = gsap.context(() => {
       // Animation du titre lettre par lettre
       if (titleRef.current) {
@@ -71,9 +76,11 @@ const Hero = () => {
         }
       );
     });
+    
+    animationRan.current = true;
 
     return () => ctx.revert();
-  }, []);
+  }, [loading, content.hero.title]);
 
   const scrollToProjects = () => {
     const element = document.getElementById("projects");
@@ -81,6 +88,19 @@ const Hero = () => {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  if (loading) {
+    return (
+      <section id="home" className="min-h-screen flex items-center justify-center hero-gradient pt-20">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto text-center">
+            <div className="h-16 bg-muted/30 rounded animate-pulse mb-6" />
+            <div className="h-8 bg-muted/30 rounded animate-pulse mb-8" />
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section
@@ -94,14 +114,13 @@ const Hero = () => {
             className="text-5xl md:text-7xl font-bold mb-6 text-foreground"
             style={{ perspective: "1000px" }}
           >
-            Créateur Digital
+            {content.hero.title}
           </h1>
           <p
             ref={subtitleRef}
             className="text-xl md:text-2xl mb-8 text-muted-foreground opacity-0"
           >
-            Designer & Développeur passionné par la création d'expériences
-            digitales uniques et innovantes
+            {content.hero.subtitle}
           </p>
           <div ref={buttonsRef} className="flex gap-4 justify-center">
             <Button
@@ -109,7 +128,7 @@ const Hero = () => {
               size="lg"
               className="group opacity-0"
             >
-              Voir mes projets
+              {content.hero.buttonProjects}
               <ArrowDown className="ml-2 h-4 w-4 group-hover:translate-y-1 transition-transform" />
             </Button>
             <Button
@@ -121,7 +140,7 @@ const Hero = () => {
                 if (element) element.scrollIntoView({ behavior: "smooth" });
               }}
             >
-              Me contacter
+              {content.hero.buttonContact}
             </Button>
           </div>
         </div>
