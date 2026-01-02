@@ -2,15 +2,20 @@ import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import CVDownload from "./CVDownload";
+import { useContentSettings } from "@/hooks/useContentSettings";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const About = () => {
+  const { content, loading } = useContentSettings();
   const sectionRef = useRef<HTMLElement>(null);
   const titleRef = useRef<HTMLHeadingElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const animationRan = useRef(false);
 
   useEffect(() => {
+    if (loading || animationRan.current) return;
+
     const ctx = gsap.context(() => {
       gsap.fromTo(
         titleRef.current,
@@ -46,34 +51,40 @@ const About = () => {
       );
     }, sectionRef);
 
+    animationRan.current = true;
+
     return () => ctx.revert();
-  }, []);
+  }, [loading]);
+
+  if (loading) {
+    return (
+      <section id="about" className="py-20 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="max-w-3xl mx-auto">
+            <div className="h-10 bg-muted/50 rounded animate-pulse mb-8 mx-auto w-64" />
+            <div className="space-y-4">
+              <div className="h-24 bg-muted/50 rounded animate-pulse" />
+              <div className="h-24 bg-muted/50 rounded animate-pulse" />
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section ref={sectionRef} id="about" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
         <div className="max-w-3xl mx-auto">
           <h2 ref={titleRef} className="text-4xl font-bold mb-8 text-center opacity-0">
-            À propos de moi
+            {content.about.title}
           </h2>
           <div ref={contentRef} className="space-y-6 text-lg text-muted-foreground">
-            <p className="opacity-0">
-              Bonjour ! Je suis un designer et développeur créatif avec une
-              passion pour la création d'expériences digitales exceptionnelles.
-              Mon approche combine esthétique moderne et fonctionnalité
-              optimale.
-            </p>
-            <p className="opacity-0">
-              Avec plusieurs années d'expérience dans le domaine du design
-              digital, j'ai eu l'opportunité de travailler sur des projets
-              variés, allant de sites web élégants à des applications mobiles
-              innovantes.
-            </p>
-            <p className="opacity-0">
-              Mon objectif est de transformer les idées en réalités visuelles
-              qui captivent et engagent les utilisateurs tout en respectant les
-              meilleures pratiques du design moderne.
-            </p>
+            {content.about.paragraphs.map((paragraph, index) => (
+              <p key={index} className="opacity-0">
+                {paragraph}
+              </p>
+            ))}
           </div>
           <CVDownload />
         </div>

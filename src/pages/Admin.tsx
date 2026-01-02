@@ -10,6 +10,7 @@ import ContactMessages from "@/components/admin/ContactMessages";
 import SkillsManager from "@/components/admin/SkillsManager";
 import SettingsManager from "@/components/admin/SettingsManager";
 import CVManager from "@/components/admin/CVManager";
+import ContentManager from "@/components/admin/ContentManager";
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -50,11 +51,12 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dev" className="w-full">
-          <TabsList className="grid w-full max-w-4xl grid-cols-6">
+          <TabsList className="grid w-full max-w-5xl grid-cols-7">
             <TabsTrigger value="dev">Projets Dev</TabsTrigger>
             <TabsTrigger value="design">Projets Design</TabsTrigger>
             <TabsTrigger value="skills">Compétences</TabsTrigger>
             <TabsTrigger value="cv">CV</TabsTrigger>
+            <TabsTrigger value="content">Contenu</TabsTrigger>
             <TabsTrigger value="messages">Messages</TabsTrigger>
             <TabsTrigger value="settings">Paramètres</TabsTrigger>
           </TabsList>
@@ -111,6 +113,20 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <CVManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="content" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Contenu des sections</CardTitle>
+                <CardDescription>
+                  Modifiez le contenu des sections Hero et À propos
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ContentManager />
               </CardContent>
             </Card>
           </TabsContent>
