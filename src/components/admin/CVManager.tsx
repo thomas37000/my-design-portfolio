@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Upload, FileText, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const experienceSchema = z.object({
@@ -52,6 +52,9 @@ const CVManager = () => {
   const [experiences, setExperiences] = useState<Experience[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
   const [languages, setLanguages] = useState<Language[]>([]);
+  const [uploadedFileUrl, setUploadedFileUrl] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CVFormData>({
     resolver: zodResolver(cvSchema),
@@ -72,6 +75,7 @@ const CVManager = () => {
 
       if (data) {
         setCvId(data.id);
+        setUploadedFileUrl(data.cv_file_url || null);
         reset({
           full_name: data.full_name,
           title: data.title,
@@ -89,6 +93,84 @@ const CVManager = () => {
       toast.error("Erreur lors du chargement du CV");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      toast.error("Seuls les fichiers PDF sont acceptés");
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error("Le fichier ne doit pas dépasser 10 Mo");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const fileName = `cv-${Date.now()}.pdf`;
+      
+      // Delete old file if exists
+      if (uploadedFileUrl) {
+        const oldPath = uploadedFileUrl.split("/cv-files/")[1];
+        if (oldPath) {
+          await supabase.storage.from("cv-files").remove([oldPath]);
+        }
+      }
+
+      const { error: uploadError } = await supabase.storage
+        .from("cv-files")
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: urlData } = supabase.storage.from("cv-files").getPublicUrl(fileName);
+      const fileUrl = urlData.publicUrl;
+
+      // Update database
+      if (cvId) {
+        const { error: updateError } = await supabase
+          .from("cv_data")
+          .update({ cv_file_url: fileUrl })
+          .eq("id", cvId);
+
+        if (updateError) throw updateError;
+      }
+
+      setUploadedFileUrl(fileUrl);
+      toast.success("CV uploadé avec succès");
+    } catch (error) {
+      console.error("Erreur upload:", error);
+      toast.error("Impossible d'uploader le fichier");
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleRemoveFile = async () => {
+    if (!uploadedFileUrl || !cvId) return;
+
+    try {
+      const oldPath = uploadedFileUrl.split("/cv-files/")[1];
+      if (oldPath) {
+        await supabase.storage.from("cv-files").remove([oldPath]);
+      }
+
+      await supabase
+        .from("cv_data")
+        .update({ cv_file_url: null })
+        .eq("id", cvId);
+
+      setUploadedFileUrl(null);
+      toast.success("CV supprimé");
+    } catch (error) {
+      console.error("Erreur suppression:", error);
+      toast.error("Impossible de supprimer le fichier");
     }
   };
 
@@ -178,14 +260,69 @@ const CVManager = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-      {/* Personal Info */}
+    <div className="space-y-8">
+      {/* Upload Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Informations personnelles</CardTitle>
+          <CardTitle className="flex items-center gap-2">
+            <Upload className="h-5 w-5" />
+            Upload CV PDF
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CardContent>
+          <p className="text-sm text-muted-foreground mb-4">
+            Uploadez un CV PDF personnalisé. S'il est présent, il sera utilisé à la place du CV généré automatiquement.
+          </p>
+          
+          {uploadedFileUrl ? (
+            <div className="flex items-center gap-4 p-4 bg-muted rounded-lg">
+              <FileText className="h-8 w-8 text-primary" />
+              <div className="flex-1">
+                <p className="font-medium">CV uploadé</p>
+                <a 
+                  href={uploadedFileUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary hover:underline"
+                >
+                  Voir le fichier
+                </a>
+              </div>
+              <Button variant="destructive" size="sm" onClick={handleRemoveFile}>
+                <X className="h-4 w-4 mr-1" />
+                Supprimer
+              </Button>
+            </div>
+          ) : (
+            <div>
+              <input
+                type="file"
+                ref={fileInputRef}
+                accept=".pdf"
+                onChange={handleFileUpload}
+                className="hidden"
+              />
+              <Button 
+                variant="outline" 
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploading}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                {uploading ? "Upload en cours..." : "Choisir un fichier PDF"}
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* Personal Info */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Informations personnelles (CV généré)</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="full_name">Nom complet *</Label>
               <Input id="full_name" {...register("full_name")} />
@@ -331,11 +468,12 @@ const CVManager = () => {
         </CardContent>
       </Card>
 
-      <Button type="submit" disabled={saving} className="w-full">
-        {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
-        Sauvegarder le CV
-      </Button>
-    </form>
+        <Button type="submit" disabled={saving} className="w-full">
+          {saving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+          Sauvegarder le CV
+        </Button>
+      </form>
+    </div>
   );
 };
 

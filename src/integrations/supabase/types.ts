@@ -123,6 +123,7 @@ export type Database = {
       cv_data: {
         Row: {
           created_at: string
+          cv_file_url: string | null
           education: Json
           email: string
           experiences: Json
@@ -137,6 +138,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          cv_file_url?: string | null
           education?: Json
           email?: string
           experiences?: Json
@@ -151,6 +153,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          cv_file_url?: string | null
           education?: Json
           email?: string
           experiences?: Json
