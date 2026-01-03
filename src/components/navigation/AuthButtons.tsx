@@ -24,16 +24,7 @@ const AuthButtons = ({ onAction, className = "" }: AuthButtonsProps) => {
   };
 
   if (!user) {
-    return (
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => handleNavigate("/auth")}
-        className={className}
-      >
-        Connexion
-      </Button>
-    );
+    return null;
   }
 
   return (
