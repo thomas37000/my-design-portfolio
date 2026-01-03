@@ -17,6 +17,7 @@ const MobileMenu = ({ isOpen, onNavigate, onClose }: MobileMenuProps) => {
         onNavigate={onNavigate}
         className="flex flex-col gap-4"
         itemClassName="text-left"
+        isMobile
       />
       
       <div className="pt-2 border-t border-border">
