@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import { z } from "zod";
 
 const authSchema = z.object({
@@ -84,16 +84,25 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>{isLogin ? "Connexion" : "Inscription"}</CardTitle>
-          <CardDescription>
-            {isLogin
-              ? "Connectez-vous à votre compte admin"
-              : "Créez un nouveau compte"}
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <div className="w-full max-w-md space-y-4">
+        <Button
+          variant="ghost"
+          onClick={() => navigate("/")}
+          className="gap-2"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Retour à l'accueil
+        </Button>
+        <Card>
+          <CardHeader>
+            <CardTitle>{isLogin ? "Connexion" : "Inscription"}</CardTitle>
+            <CardDescription>
+              {isLogin
+                ? "Connectez-vous à votre compte admin"
+                : "Créez un nouveau compte"}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
           {authError && (
             <Alert variant="destructive">
               <AlertCircle className="h-4 w-4" />
@@ -142,7 +151,8 @@ const Auth = () => {
             </Button>
           </div>
         </CardContent>
-      </Card>
+        </Card>
+      </div>
     </div>
   );
 };
