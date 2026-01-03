@@ -6,6 +6,7 @@ export interface HeroContent {
   subtitle: string;
   buttonProjects: string;
   buttonContact: string;
+  image?: string;
 }
 
 export interface AboutContent {
