@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useContentSettings, ContentSettings } from "@/hooks/useContentSettings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Loader2, Plus, Trash2, Upload, X, ImageIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { supabase } from "@/integrations/supabase/client";
 
 const ContentManager = () => {
   const { content, loading, updateContent } = useContentSettings();
   const [formData, setFormData] = useState<ContentSettings | null>(null);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -26,6 +29,88 @@ const ContentManager = () => {
       ...formData,
       hero: { ...formData.hero, [field]: value },
     });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !formData) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Erreur",
+        description: "Veuillez sélectionner une image.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setUploadingImage(true);
+
+    try {
+      const fileExt = file.name.split(".").pop();
+      const fileName = `hero-image-${Date.now()}.${fileExt}`;
+
+      // Delete old image if exists
+      if (formData.hero.image) {
+        const oldPath = formData.hero.image.split("/").pop();
+        if (oldPath) {
+          await supabase.storage.from("cv-files").remove([oldPath]);
+        }
+      }
+
+      const { error: uploadError } = await supabase.storage
+        .from("cv-files")
+        .upload(fileName, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("cv-files")
+        .getPublicUrl(fileName);
+
+      setFormData({
+        ...formData,
+        hero: { ...formData.hero, image: publicUrl },
+      });
+
+      toast({
+        title: "Image uploadée",
+        description: "L'image a été uploadée avec succès.",
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible d'uploader l'image.",
+        variant: "destructive",
+      });
+    } finally {
+      setUploadingImage(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const removeImage = async () => {
+    if (!formData?.hero.image) return;
+
+    try {
+      const oldPath = formData.hero.image.split("/").pop();
+      if (oldPath) {
+        await supabase.storage.from("cv-files").remove([oldPath]);
+      }
+
+      setFormData({
+        ...formData,
+        hero: { ...formData.hero, image: undefined },
+      });
+
+      toast({
+        title: "Image supprimée",
+        description: "L'image a été supprimée.",
+      });
+    } catch (error) {
+      console.error("Error removing image:", error);
+    }
   };
 
   const handleAboutTitleChange = (value: string) => {
@@ -141,6 +226,59 @@ const ContentManager = () => {
                 placeholder="Me contacter"
               />
             </div>
+          </div>
+
+          {/* Image Upload */}
+          <div className="space-y-2">
+            <Label>Image Hero (optionnelle)</Label>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              className="hidden"
+            />
+            
+            {formData.hero.image ? (
+              <div className="relative inline-block">
+                <img
+                  src={formData.hero.image}
+                  alt="Hero preview"
+                  className="w-48 h-32 object-cover rounded-lg border"
+                />
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="icon"
+                  className="absolute -top-2 -right-2 h-6 w-6"
+                  onClick={removeImage}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingImage}
+              >
+                {uploadingImage ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Upload en cours...
+                  </>
+                ) : (
+                  <>
+                    <ImageIcon className="mr-2 h-4 w-4" />
+                    Ajouter une image
+                  </>
+                )}
+              </Button>
+            )}
+            <p className="text-xs text-muted-foreground">
+              Si une image est ajoutée, le Hero aura un design différent avec l'image en arrière-plan.
+            </p>
           </div>
         </CardContent>
       </Card>

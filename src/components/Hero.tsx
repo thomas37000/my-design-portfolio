@@ -102,6 +102,83 @@ const Hero = () => {
     );
   }
 
+  // Design avec image
+  if (content.hero.image) {
+    return (
+      <section
+        id="home"
+        className="min-h-screen relative flex items-center justify-center pt-20 overflow-hidden"
+      >
+        {/* Background Image */}
+        <div
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundImage: `url(${content.hero.image})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        >
+          <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
+        </div>
+
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            {/* Text Content */}
+            <div className="text-center lg:text-left">
+              <h1
+                ref={titleRef}
+                className="text-5xl md:text-7xl font-bold mb-6 text-foreground"
+                style={{ perspective: "1000px" }}
+              >
+                {content.hero.title}
+              </h1>
+              <p
+                ref={subtitleRef}
+                className="text-xl md:text-2xl mb-8 text-muted-foreground opacity-0"
+              >
+                {content.hero.subtitle}
+              </p>
+              <div ref={buttonsRef} className="flex gap-4 justify-center lg:justify-start">
+                <Button
+                  onClick={scrollToProjects}
+                  size="lg"
+                  className="group opacity-0"
+                >
+                  {content.hero.buttonProjects}
+                  <ArrowDown className="ml-2 h-4 w-4 group-hover:translate-y-1 transition-transform" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="opacity-0"
+                  onClick={() => {
+                    const element = document.getElementById("contact");
+                    if (element) element.scrollIntoView({ behavior: "smooth" });
+                  }}
+                >
+                  {content.hero.buttonContact}
+                </Button>
+              </div>
+            </div>
+
+            {/* Image */}
+            <div className="hidden lg:flex justify-center">
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl" />
+                <img
+                  src={content.hero.image}
+                  alt="Hero"
+                  className="relative z-10 w-80 h-80 object-cover rounded-full border-4 border-primary/20 shadow-2xl"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  // Design sans image (original)
   return (
     <section
       id="home"
