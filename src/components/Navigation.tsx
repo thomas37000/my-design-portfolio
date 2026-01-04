@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { Button } from "./ui/button";
 import { Menu, X } from "lucide-react";
 import { ThemeToggle } from "./ThemeToggle";
@@ -27,7 +28,10 @@ const Navigation = () => {
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
+           <Link to="/">
+            <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
+          </Link>
+          
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex gap-8 items-center">
