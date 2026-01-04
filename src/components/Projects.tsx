@@ -53,14 +53,14 @@ const Projects = () => {
   // Force horizontal gallery on mobile, use grid only on desktop when setting is "grid"
   if (displayMode === "grid" && !isMobile) {
     return (
-      <ProjectsGrid id="projects" title="Mes Projets">
+      <ProjectsGrid id="projects" title="Projets Développement Web">
         {projectCards}
       </ProjectsGrid>
     );
   }
 
   return (
-    <HorizontalGallery id="projects" title="Mes Projets">
+    <HorizontalGallery id="projects" title="Projets Développement Web">
       {projectCards}
     </HorizontalGallery>
   );

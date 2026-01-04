@@ -1,5 +1,5 @@
 import { forwardRef } from "react";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Monitor, Phone } from "lucide-react";
 
 interface ContactInfoItemProps {
   icon: React.ReactNode;
@@ -24,17 +24,22 @@ const ContactInfo = forwardRef<HTMLDivElement>((_, ref) => {
     {
       icon: <Mail className="w-5 h-5" />,
       label: "Email",
-      value: "contact@example.com",
+      value: "thomas.chalanson@gmail.com",
     },
     {
       icon: <Phone className="w-5 h-5" />,
       label: "Téléphone",
-      value: "+33 6 12 34 56 78",
+      value: "06 63 80 28 04",
     },
     {
       icon: <MapPin className="w-5 h-5" />,
       label: "Localisation",
-      value: "Paris, France",
+      value: "Tours, 37000",
+    },
+    {
+      icon: <Monitor className="w-5 h-5" />,
+      label: "Travail",
+      value: "Présentiel ou à distance / 100% remote",
     },
   ];
 

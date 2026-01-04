@@ -20,8 +20,8 @@ export const navLinks: NavLink[] = [
     id: "projects", 
     label: "Projets",
     submenu: [
-      { id: "projects", label: "Projets Dev" },
       { id: "design-projects", label: "Projets Web Design" },
+      { id: "projects", label: "Projets Dev" },
     ]
   },
   { id: "skills", label: "Compétences" },

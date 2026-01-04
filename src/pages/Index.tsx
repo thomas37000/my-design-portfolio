@@ -12,12 +12,12 @@ const Index = () => {
       <Navigation />
       <Hero />
       <About />
-      <Projects />
       <DesignProjects />
+      <Projects />
       <Skills />
       <Contact />
       <footer className="py-8 text-center text-muted-foreground border-t">
-        <p>© 2024 Portfolio. Tous droits réservés.</p>
+        <p>© 2026 Portfolio réalisé par Thomas Chalanson. Tous droits réservés.</p>
       </footer>
     </div>
   );
