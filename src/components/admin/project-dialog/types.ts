@@ -13,6 +13,7 @@ export interface ProjectFormData {
   organisme: string;
   lien_url: string;
   img: string;
+  images: string[];
   github: string;
   technos: string;
   logiciels: string;
@@ -28,6 +29,7 @@ export const initialFormData: ProjectFormData = {
   organisme: "",
   lien_url: "",
   img: "",
+  images: [],
   github: "",
   technos: "",
   logiciels: "",

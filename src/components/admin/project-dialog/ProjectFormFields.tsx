@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { ProjectFormData } from "./types";
+import ImagesManager from "./ImagesManager";
 
 interface ProjectFormFieldsProps {
   formData: ProjectFormData;
@@ -107,6 +108,10 @@ const ProjectFormFields = ({
 
       {projectType === "design" && (
         <>
+          <ImagesManager
+            images={formData.images}
+            onChange={(images) => onFieldChange("images", images)}
+          />
           <div>
             <Label htmlFor="logiciels">Logiciels (séparés par des virgules)</Label>
             <Input
