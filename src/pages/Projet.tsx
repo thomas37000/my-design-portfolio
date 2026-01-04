@@ -1,15 +1,30 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Designer_project } from "@/types";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Navigation from "@/components/Navigation";
+import ImageSlider from "@/components/project/ImageSlider";
+
+interface DesignerProject {
+  id: number;
+  description: string;
+  fini: boolean;
+  nom_projet: string;
+  logiciels: string[];
+  tags: string[];
+  titre: string;
+  lien_url: string;
+  img: string;
+  images: string[];
+  organisme: string;
+  IA: boolean;
+}
 
 const Projet = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const [project, setProject] = useState<Designer_project | null>(null);
+  const [project, setProject] = useState<DesignerProject | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -29,7 +44,7 @@ const Projet = () => {
       if (error) {
         console.error(error);
       } else {
-        setProject(data as unknown as Designer_project);
+        setProject(data as unknown as DesignerProject);
       }
     } catch (error) {
       console.error(error);
@@ -37,6 +52,24 @@ const Projet = () => {
       setLoading(false);
     }
   }
+
+  // Combine img and images for the slider
+  const getProjectImages = (): string[] => {
+    if (!project) return [];
+    const allImages: string[] = [];
+    
+    // Add images array first
+    if (project.images && project.images.length > 0) {
+      allImages.push(...project.images);
+    }
+    
+    // If no images array but has single img, use that
+    if (allImages.length === 0 && project.img) {
+      allImages.push(project.img);
+    }
+    
+    return allImages;
+  };
 
   if (loading) {
     return (
@@ -64,6 +97,8 @@ const Projet = () => {
     );
   }
 
+  const projectImages = getProjectImages();
+
   return (
     <div className="min-h-screen">
       <Navigation />
@@ -78,13 +113,9 @@ const Projet = () => {
         </Button>
 
         <article className="max-w-4xl mx-auto">
-          {project.img && (
-            <div className="relative overflow-hidden rounded-lg mb-8 aspect-video">
-              <img
-                src={project.img}
-                alt={project.titre}
-                className="w-full h-full object-cover"
-              />
+          {projectImages.length > 0 && (
+            <div className="mb-8">
+              <ImageSlider images={projectImages} alt={project.titre} />
             </div>
           )}
 

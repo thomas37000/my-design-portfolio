@@ -259,6 +259,7 @@ export type Database = {
           fini: boolean | null
           IA: boolean | null
           id: number
+          images: string[] | null
           img: string | null
           lien_url: string | null
           logiciels: string[] | null
@@ -273,6 +274,7 @@ export type Database = {
           fini?: boolean | null
           IA?: boolean | null
           id?: number
+          images?: string[] | null
           img?: string | null
           lien_url?: string | null
           logiciels?: string[] | null
@@ -287,6 +289,7 @@ export type Database = {
           fini?: boolean | null
           IA?: boolean | null
           id?: number
+          images?: string[] | null
           img?: string | null
           lien_url?: string | null
           logiciels?: string[] | null

@@ -73,6 +73,7 @@ export const useProjectForm = ({
         organisme: project.organisme || "",
         lien_url: project.lien_url || "",
         img: project.img || "",
+        images: project.images || [],
         github: project.github || "",
         technos: project.technos?.join(", ") || "",
         logiciels: project.logiciels?.join(", ") || "",
@@ -130,6 +131,7 @@ export const useProjectForm = ({
       } else {
         dataToSave.logiciels = parseArrayField(formData.logiciels);
         dataToSave.tags = parseArrayField(formData.tags);
+        dataToSave.images = formData.images;
       }
 
       let projectId = project?.id;
