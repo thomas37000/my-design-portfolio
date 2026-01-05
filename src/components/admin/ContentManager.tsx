@@ -2,12 +2,12 @@ import { useState, useEffect, useRef } from "react";
 import { useContentSettings, ContentSettings } from "@/hooks/useContentSettings";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Plus, Trash2, Upload, X, ImageIcon } from "lucide-react";
+import { Loader2, X, ImageIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
+import RichTextEditor from "./RichTextEditor";
 
 const ContentManager = () => {
   const { content, loading, updateContent } = useContentSettings();
@@ -121,30 +121,11 @@ const ContentManager = () => {
     });
   };
 
-  const handleParagraphChange = (index: number, value: string) => {
-    if (!formData) return;
-    const newParagraphs = [...formData.about.paragraphs];
-    newParagraphs[index] = value;
-    setFormData({
-      ...formData,
-      about: { ...formData.about, paragraphs: newParagraphs },
-    });
-  };
-
-  const addParagraph = () => {
+  const handleRichContentChange = (value: string) => {
     if (!formData) return;
     setFormData({
       ...formData,
-      about: { ...formData.about, paragraphs: [...formData.about.paragraphs, ""] },
-    });
-  };
-
-  const removeParagraph = (index: number) => {
-    if (!formData || formData.about.paragraphs.length <= 1) return;
-    const newParagraphs = formData.about.paragraphs.filter((_, i) => i !== index);
-    setFormData({
-      ...formData,
-      about: { ...formData.about, paragraphs: newParagraphs },
+      about: { ...formData.about, richContent: value },
     });
   };
 
@@ -198,12 +179,11 @@ const ContentManager = () => {
 
           <div className="space-y-2">
             <Label htmlFor="hero-subtitle">Sous-titre</Label>
-            <Textarea
+            <Input
               id="hero-subtitle"
               value={formData.hero.subtitle}
               onChange={(e) => handleHeroChange("subtitle", e.target.value)}
               placeholder="Designer & Développeur passionné..."
-              rows={2}
             />
           </div>
 
@@ -299,37 +279,15 @@ const ContentManager = () => {
             />
           </div>
 
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <Label>Paragraphes</Label>
-              <Button type="button" variant="outline" size="sm" onClick={addParagraph}>
-                <Plus className="h-4 w-4 mr-1" />
-                Ajouter
-              </Button>
-            </div>
-
-            {formData.about.paragraphs.map((paragraph, index) => (
-              <div key={index} className="flex gap-2">
-                <Textarea
-                  value={paragraph}
-                  onChange={(e) => handleParagraphChange(index, e.target.value)}
-                  placeholder={`Paragraphe ${index + 1}`}
-                  rows={3}
-                  className="flex-1"
-                />
-                {formData.about.paragraphs.length > 1 && (
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => removeParagraph(index)}
-                    className="text-destructive hover:text-destructive"
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                )}
-              </div>
-            ))}
+          <div className="space-y-2">
+            <Label>Contenu</Label>
+            <RichTextEditor
+              content={formData.about.richContent || ""}
+              onChange={handleRichContentChange}
+            />
+            <p className="text-xs text-muted-foreground">
+              Utilisez la barre d'outils pour mettre en forme le texte (gras, italique, listes...)
+            </p>
           </div>
         </CardContent>
       </Card>

@@ -12,6 +12,7 @@ export interface HeroContent {
 export interface AboutContent {
   title: string;
   paragraphs: string[];
+  richContent?: string; // HTML content from rich text editor
 }
 
 export interface ContentSettings {

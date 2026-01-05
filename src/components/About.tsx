@@ -72,6 +72,9 @@ const About = () => {
     );
   }
 
+  // Check if we have rich content, otherwise fall back to paragraphs
+  const hasRichContent = content.about.richContent && content.about.richContent.trim() !== "";
+
   return (
     <section ref={sectionRef} id="about" className="py-20 bg-muted/30">
       <div className="container mx-auto px-4">
@@ -80,11 +83,21 @@ const About = () => {
             {content.about.title}
           </h2>
           <div ref={contentRef} className="space-y-6 text-lg text-muted-foreground">
-            {content.about.paragraphs.map((paragraph, index) => (
-              <p key={index} className="opacity-0">
-                {paragraph}
-              </p>
-            ))}
+            {hasRichContent ? (
+              <div 
+                className="prose prose-lg dark:prose-invert max-w-none opacity-0
+                  prose-p:text-muted-foreground prose-strong:text-foreground
+                  prose-ul:list-disc prose-ol:list-decimal
+                  prose-li:text-muted-foreground"
+                dangerouslySetInnerHTML={{ __html: content.about.richContent! }}
+              />
+            ) : (
+              content.about.paragraphs.map((paragraph, index) => (
+                <p key={index} className="opacity-0">
+                  {paragraph}
+                </p>
+              ))
+            )}
           </div>
           <CVDownload />
         </div>
