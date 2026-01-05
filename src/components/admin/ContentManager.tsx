@@ -12,15 +12,44 @@ import RichTextEditor from "./RichTextEditor";
 const ContentManager = () => {
   const { content, loading, updateContent } = useContentSettings();
   const [formData, setFormData] = useState<ContentSettings | null>(null);
+  const [loadingFormData, setLoadingFormData] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   useEffect(() => {
-    if (content) {
-      setFormData(content);
-    }
+    let cancelled = false;
+
+    const load = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("settings")
+          .select("value")
+          .eq("key", "content_settings")
+          .maybeSingle();
+
+        if (error) throw error;
+
+        const raw = Array.isArray(data) ? data[0] : data;
+        const value = (raw as any)?.value as unknown;
+
+        if (!cancelled) {
+          setFormData((value ? (value as ContentSettings) : content) ?? content);
+        }
+      } catch (error) {
+        console.error("Error loading content settings for admin:", error);
+        if (!cancelled) setFormData(content);
+      } finally {
+        if (!cancelled) setLoadingFormData(false);
+      }
+    };
+
+    load();
+
+    return () => {
+      cancelled = true;
+    };
   }, [content]);
 
   const handleHeroChange = (field: keyof ContentSettings["hero"], value: string) => {
@@ -170,7 +199,7 @@ const ContentManager = () => {
     setSaving(false);
   };
 
-  if (loading || !formData) {
+  if (loading || loadingFormData || !formData) {
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
