@@ -18,10 +18,10 @@ const ContentManager = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    if (content && !formData) {
+    if (content) {
       setFormData(content);
     }
-  }, [content, formData]);
+  }, [content]);
 
   const handleHeroChange = (field: keyof ContentSettings["hero"], value: string) => {
     if (!formData) return;
