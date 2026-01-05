@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, X, ImageIcon } from "lucide-react";
+import { Loader2, X, ImageIcon, Plus, Trash2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import RichTextEditor from "./RichTextEditor";
@@ -121,11 +121,30 @@ const ContentManager = () => {
     });
   };
 
-  const handleRichContentChange = (value: string) => {
+  const handleParagraphChange = (index: number, value: string) => {
+    if (!formData) return;
+    const newParagraphs = [...formData.about.paragraphs];
+    newParagraphs[index] = value;
+    setFormData({
+      ...formData,
+      about: { ...formData.about, paragraphs: newParagraphs },
+    });
+  };
+
+  const addParagraph = () => {
     if (!formData) return;
     setFormData({
       ...formData,
-      about: { ...formData.about, richContent: value },
+      about: { ...formData.about, paragraphs: [...formData.about.paragraphs, ""] },
+    });
+  };
+
+  const removeParagraph = (index: number) => {
+    if (!formData || formData.about.paragraphs.length <= 1) return;
+    const newParagraphs = formData.about.paragraphs.filter((_, i) => i !== index);
+    setFormData({
+      ...formData,
+      about: { ...formData.about, paragraphs: newParagraphs },
     });
   };
 
@@ -279,12 +298,36 @@ const ContentManager = () => {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label>Contenu</Label>
-            <RichTextEditor
-              content={formData.about.richContent || ""}
-              onChange={handleRichContentChange}
-            />
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <Label>Paragraphes</Label>
+              <Button type="button" variant="outline" size="sm" onClick={addParagraph}>
+                <Plus className="h-4 w-4 mr-1" />
+                Ajouter
+              </Button>
+            </div>
+            {formData.about.paragraphs.map((paragraph, index) => (
+              <div key={index} className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="text-sm text-muted-foreground">Paragraphe {index + 1}</Label>
+                  {formData.about.paragraphs.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeParagraph(index)}
+                      className="text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+                <RichTextEditor
+                  content={paragraph}
+                  onChange={(value) => handleParagraphChange(index, value)}
+                />
+              </div>
+            ))}
             <p className="text-xs text-muted-foreground">
               Utilisez la barre d'outils pour mettre en forme le texte (gras, italique, listes...)
             </p>
