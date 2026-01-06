@@ -267,6 +267,7 @@ export type Database = {
           organisme: string | null
           tags: string[] | null
           titre: string | null
+          year: number | null
         }
         Insert: {
           created_at?: string
@@ -282,6 +283,7 @@ export type Database = {
           organisme?: string | null
           tags?: string[] | null
           titre?: string | null
+          year?: number | null
         }
         Update: {
           created_at?: string
@@ -297,6 +299,7 @@ export type Database = {
           organisme?: string | null
           tags?: string[] | null
           titre?: string | null
+          year?: number | null
         }
         Relationships: []
       }
@@ -341,6 +344,7 @@ export type Database = {
           created_at: string
           description: string | null
           fini: boolean | null
+          finish_date: string | null
           github: string | null
           IA: boolean | null
           id: number
@@ -355,6 +359,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           fini?: boolean | null
+          finish_date?: string | null
           github?: string | null
           IA?: boolean | null
           id?: number
@@ -369,6 +374,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           fini?: boolean | null
+          finish_date?: string | null
           github?: string | null
           IA?: boolean | null
           id?: number
