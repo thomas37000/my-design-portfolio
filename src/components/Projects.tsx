@@ -22,7 +22,7 @@ const Projects = () => {
       const { data, error } = await supabase
         .from("dev_projects")
         .select("*")
-        .order("created_at", { ascending: false });
+        .order("finish_date", { ascending: false });
 
       if (error) {
         console.error(error);
