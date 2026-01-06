@@ -64,6 +64,21 @@ export const useAuth = () => {
     };
   }, [clearAdminTimeout]);
 
+  const clearInvalidSession = useCallback(async () => {
+    // Clear all Supabase-related localStorage items
+    const keysToRemove = Object.keys(localStorage).filter(key => 
+      key.startsWith('sb-') || key === 'admin_login_time'
+    );
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    
+    setUser(null);
+    setSession(null);
+    setIsAdmin(false);
+    setAdminChecked(true);
+    setLoading(false);
+    clearAdminTimeout();
+  }, [clearAdminTimeout]);
+
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -85,7 +100,14 @@ export const useAuth = () => {
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session }, error }) => {
+      // Handle invalid session error
+      if (error?.code === 'session_not_found' || error?.message?.includes('session_not_found')) {
+        console.warn('Session invalide détectée, nettoyage...');
+        await clearInvalidSession();
+        return;
+      }
+      
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
@@ -94,10 +116,14 @@ export const useAuth = () => {
         setAdminChecked(true);
       }
       setLoading(false);
+    }).catch(async (error) => {
+      // Catch any unexpected errors and clear invalid session
+      console.warn('Erreur de session:', error);
+      await clearInvalidSession();
     });
 
     return () => subscription.unsubscribe();
-  }, [clearAdminTimeout]);
+  }, [clearAdminTimeout, clearInvalidSession]);
 
   const checkAdminRole = async (userId: string) => {
     try {
