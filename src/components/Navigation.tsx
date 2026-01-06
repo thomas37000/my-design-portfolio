@@ -30,32 +30,22 @@ const Navigation = () => {
     >
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
-          {isProjectPage ? (
-            <Link to="/" className="flex items-center gap-2 text-foreground hover:text-primary transition-colors">
-              <ArrowLeft className="h-5 w-5" />
-              <span className="font-medium">Retour</span>
-            </Link>
-          ) : (
-            <Link to="/">
+          <Link to="/">
               <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
-            </Link>
-          )}
+          </Link>
 
           {/* Desktop Navigation */}
           {!isProjectPage && (
             <div className="hidden md:flex gap-8 items-center">
               <NavLinks onNavigate={scrollToSection} className="flex gap-8" />
-              <ThemeToggle />
-              <AuthButtons />
             </div>
           )}
 
-          {isProjectPage && (
-            <div className="hidden md:flex items-center">
-              <ThemeToggle />
-            </div>
-          )}
-
+          <div className="hidden md:flex items-center">
+            <ThemeToggle />
+            <AuthButtons />
+          </div>
+          
           {/* Mobile Menu Button */}
           {!isProjectPage && (
             <Button
@@ -71,6 +61,7 @@ const Navigation = () => {
           {isProjectPage && (
             <div className="md:hidden">
               <ThemeToggle />
+              <AuthButtons />
             </div>
           )}
         </div>
