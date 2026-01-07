@@ -22,6 +22,7 @@ const Projects = () => {
       const { data, error } = await supabase
         .from("dev_projects")
         .select("*")
+        .eq("hidden", false)
         .order("finish_date", { ascending: false });
 
       if (error) {

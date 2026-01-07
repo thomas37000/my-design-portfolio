@@ -346,6 +346,7 @@ export type Database = {
           fini: boolean | null
           finish_date: string | null
           github: string | null
+          hidden: boolean
           IA: boolean | null
           id: number
           img: string | null
@@ -361,6 +362,7 @@ export type Database = {
           fini?: boolean | null
           finish_date?: string | null
           github?: string | null
+          hidden?: boolean
           IA?: boolean | null
           id?: number
           img?: string | null
@@ -376,6 +378,7 @@ export type Database = {
           fini?: boolean | null
           finish_date?: string | null
           github?: string | null
+          hidden?: boolean
           IA?: boolean | null
           id?: number
           img?: string | null

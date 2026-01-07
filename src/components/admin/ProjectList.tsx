@@ -1,17 +1,18 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Pencil, Trash2, Loader2, ExternalLink } from "lucide-react";
+import { Pencil, Trash2, Loader2, ExternalLink, Eye, EyeOff } from "lucide-react";
 
 interface ProjectListProps {
   projects: any[];
   loading: boolean;
   onEdit: (project: any) => void;
   onDelete: (id: number) => void;
+  onToggleVisibility?: (id: number, hidden: boolean) => void;
   projectType: "dev" | "design";
 }
 
-const ProjectList = ({ projects, loading, onEdit, onDelete, projectType }: ProjectListProps) => {
+const ProjectList = ({ projects, loading, onEdit, onDelete, onToggleVisibility, projectType }: ProjectListProps) => {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -37,6 +38,9 @@ const ProjectList = ({ projects, loading, onEdit, onDelete, projectType }: Proje
               <div className="flex-1 space-y-2">
                 <div className="flex items-center gap-2">
                   <h3 className="text-xl font-semibold">{project.titre || project.nom_projet}</h3>
+                  {project.hidden && (
+                    <Badge variant="destructive">Caché</Badge>
+                  )}
                   {project.fini && (
                     <Badge variant="secondary">Terminé</Badge>
                   )}
@@ -88,6 +92,16 @@ const ProjectList = ({ projects, loading, onEdit, onDelete, projectType }: Proje
               </div>
 
               <div className="flex gap-2">
+                {projectType === "dev" && onToggleVisibility && (
+                  <Button
+                    variant={project.hidden ? "default" : "outline"}
+                    size="icon"
+                    onClick={() => onToggleVisibility(project.id, !project.hidden)}
+                    title={project.hidden ? "Afficher le projet" : "Cacher le projet"}
+                  >
+                    {project.hidden ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                  </Button>
+                )}
                 <Button
                   variant="outline"
                   size="icon"
