@@ -67,6 +67,27 @@ const ProjectManager = ({ projectType }: ProjectManagerProps) => {
     }
   };
 
+  const handleToggleVisibility = async (id: number, hidden: boolean) => {
+    const { error } = await supabase
+      .from(tableName)
+      .update({ hidden })
+      .eq("id", id);
+
+    if (error) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de modifier la visibilité",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Succès",
+        description: hidden ? "Projet caché" : "Projet visible",
+      });
+      fetchProjects();
+    }
+  };
+
   const handleDialogClose = () => {
     setDialogOpen(false);
     setEditingProject(null);
@@ -91,6 +112,7 @@ const ProjectManager = ({ projectType }: ProjectManagerProps) => {
         loading={loading}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onToggleVisibility={projectType === "dev" ? handleToggleVisibility : undefined}
         projectType={projectType}
       />
 
