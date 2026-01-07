@@ -452,50 +452,6 @@ export type Database = {
         }
         Relationships: []
       }
-      liste_courses: {
-        Row: {
-          adresse: string | null
-          created_at: string
-          departement: string | null
-          id: number
-          magasin: number | null
-          nom_magasin: string | null
-          nombre_articles: number | null
-          total: number | null
-          ville: string | null
-        }
-        Insert: {
-          adresse?: string | null
-          created_at?: string
-          departement?: string | null
-          id?: number
-          magasin?: number | null
-          nom_magasin?: string | null
-          nombre_articles?: number | null
-          total?: number | null
-          ville?: string | null
-        }
-        Update: {
-          adresse?: string | null
-          created_at?: string
-          departement?: string | null
-          id?: number
-          magasin?: number | null
-          nom_magasin?: string | null
-          nombre_articles?: number | null
-          total?: number | null
-          ville?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "liste_courses_magasin_fkey"
-            columns: ["magasin"]
-            isOneToOne: false
-            referencedRelation: "magasin"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       logements: {
         Row: {
           chambre: number | null
@@ -639,6 +595,32 @@ export type Database = {
           value?: Json
         }
         Relationships: []
+      }
+      shopping_list: {
+        Row: {
+          magasin: number | null
+          nombre_articles: number | null
+          total: number | null
+        }
+        Insert: {
+          magasin?: number | null
+          nombre_articles?: number | null
+          total?: number | null
+        }
+        Update: {
+          magasin?: number | null
+          nombre_articles?: number | null
+          total?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "liste_courses_magasin_fkey"
+            columns: ["magasin"]
+            isOneToOne: false
+            referencedRelation: "magasin"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       skills: {
         Row: {
