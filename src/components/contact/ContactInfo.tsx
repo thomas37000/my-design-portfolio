@@ -24,12 +24,12 @@ const ContactInfo = forwardRef<HTMLDivElement>((_, ref) => {
     {
       icon: <Mail className="w-5 h-5" />,
       label: "Email",
-      value: "thomas.chalanson@gmail.com",
+      value: "contact@example.com"
     },
     {
       icon: <Phone className="w-5 h-5" />,
       label: "Téléphone",
-      value: "06 63 80 28 04",
+      value: "*33 6 12 34 56 78",
     },
     {
       icon: <MapPin className="w-5 h-5" />,
