@@ -8,11 +8,11 @@ interface ProjectCardProps {
   lien_url: string;
   github: string;
   img: string;
-
   organisme: string;
+  fini?: boolean;
 }
 
-const ProjectCard = ({ description, technos, titre, lien_url, github, img, organisme }: ProjectCardProps) => {
+const ProjectCard = ({ description, technos, titre, lien_url, github, img, organisme, fini }: ProjectCardProps) => {
   return (
     <Card className="overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-2">
       <div className="relative overflow-hidden aspect-video">
@@ -21,6 +21,12 @@ const ProjectCard = ({ description, technos, titre, lien_url, github, img, organ
           alt={titre}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
+        {!fini && (
+          <div className="absolute top-2 right-2 bg-red-500 text-white text-xs font-bold uppercase tracking-wider px-2 py-1 rounded">
+            En cours de développement
+          </div>
+        )}
+        {/* Blurred overlay on hover */}
         <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300" />
       </div>
       <div className="p-6">
