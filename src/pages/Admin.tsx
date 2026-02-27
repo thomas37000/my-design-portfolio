@@ -1,10 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { Badge } from "@/components/ui/badge";
 import ProjectManager from "@/components/admin/ProjectManager";
 import ContactMessages from "@/components/admin/ContactMessages";
 import SkillsManager from "@/components/admin/SkillsManager";
@@ -16,6 +18,28 @@ const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [checking, setChecking] = useState(true);
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  const fetchUnreadCount = useCallback(async () => {
+    const { count } = await supabase
+      .from("contact")
+      .select("*", { count: "exact", head: true })
+      .eq("status", "unread");
+    setUnreadCount(count || 0);
+  }, []);
+
+  useEffect(() => {
+    if (!checking) {
+      fetchUnreadCount();
+      const channel = supabase
+        .channel("unread-messages")
+        .on("postgres_changes", { event: "*", schema: "public", table: "contact" }, () => {
+          fetchUnreadCount();
+        })
+        .subscribe();
+      return () => { supabase.removeChannel(channel); };
+    }
+  }, [checking, fetchUnreadCount]);
 
   useEffect(() => {
     if (!loading) {
@@ -57,7 +81,14 @@ const Admin = () => {
             <TabsTrigger value="skills">Compétences</TabsTrigger>
             <TabsTrigger value="cv">CV</TabsTrigger>
             <TabsTrigger value="content">Contenu</TabsTrigger>
-            <TabsTrigger value="messages">Messages</TabsTrigger>
+            <TabsTrigger value="messages" className="relative">
+              Messages
+              {unreadCount > 0 && (
+                <Badge variant="destructive" className="ml-1.5 h-5 min-w-5 px-1 text-xs">
+                  {unreadCount}
+                </Badge>
+              )}
+            </TabsTrigger>
             <TabsTrigger value="settings">Paramètres</TabsTrigger>
           </TabsList>
 

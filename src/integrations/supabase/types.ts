@@ -601,29 +601,36 @@ export type Database = {
       }
       shopping_list: {
         Row: {
-          magasin: number | null
+          adresse: string | null
+          created_at: string
+          departement: number | null
+          id: number
+          nom_magasin: string | null
           nombre_articles: number | null
           total: number | null
+          ville: string | null
         }
         Insert: {
-          magasin?: number | null
+          adresse?: string | null
+          created_at?: string
+          departement?: number | null
+          id?: number
+          nom_magasin?: string | null
           nombre_articles?: number | null
           total?: number | null
+          ville?: string | null
         }
         Update: {
-          magasin?: number | null
+          adresse?: string | null
+          created_at?: string
+          departement?: number | null
+          id?: number
+          nom_magasin?: string | null
           nombre_articles?: number | null
           total?: number | null
+          ville?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "liste_courses_magasin_fkey"
-            columns: ["magasin"]
-            isOneToOne: false
-            referencedRelation: "magasin"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       skills: {
         Row: {
