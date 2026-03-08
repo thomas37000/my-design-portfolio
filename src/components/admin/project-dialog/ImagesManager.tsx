@@ -193,6 +193,16 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
                   type="button"
                   variant="ghost"
                   size="icon"
+                  className="h-8 w-8"
+                  onClick={() => openPickerForReplace(index)}
+                  title="Modifier depuis la bibliothèque"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-destructive hover:text-destructive"
                   onClick={() => removeImage(index)}
                 >
@@ -230,7 +240,7 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
           </Button>
         </div>
 
-        <Button type="button" variant="outline" onClick={() => setPickerOpen(true)}>
+        <Button type="button" variant="outline" onClick={openPickerForAdd}>
           <Image className="h-4 w-4 mr-1" />
           Bibliothèque
         </Button>
