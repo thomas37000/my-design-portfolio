@@ -272,10 +272,12 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
       )}
 
       {/* Storage picker dialog */}
-      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+      <Dialog open={pickerOpen} onOpenChange={(open) => { setPickerOpen(open); if (!open) setReplaceIndex(null); }}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Choisir une image de la bibliothèque</DialogTitle>
+            <DialogTitle>
+              {replaceIndex !== null ? "Remplacer l'image depuis la bibliothèque" : "Choisir une image de la bibliothèque"}
+            </DialogTitle>
           </DialogHeader>
           {storageLoading ? (
             <div className="flex justify-center py-12">
