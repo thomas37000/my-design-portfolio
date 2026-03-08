@@ -283,7 +283,7 @@ const ImageManager = () => {
   const handleReplace = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!replaceTarget || !e.target.files?.[0] || !currentBucket) return;
 
-    const file = e.target.files[0];
+    const file = await compressToWebP(e.target.files[0]);
     const path = replaceTarget.folder
       ? `${replaceTarget.folder}/${replaceTarget.name}`
       : replaceTarget.name;

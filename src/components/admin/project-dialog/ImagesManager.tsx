@@ -109,7 +109,7 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
 
       const { error } = await supabase.storage
         .from(BUCKET)
-        .upload(fileName, file, { cacheControl: "3600", upsert: false });
+        .upload(fileName, compressed, { cacheControl: "3600", upsert: false });
 
       if (!error) {
         const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(fileName);
