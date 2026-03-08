@@ -13,6 +13,7 @@ import SkillsManager from "@/components/admin/SkillsManager";
 import SettingsManager from "@/components/admin/SettingsManager";
 import CVManager from "@/components/admin/CVManager";
 import ContentManager from "@/components/admin/ContentManager";
+import ImageManager from "@/components/admin/ImageManager";
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
