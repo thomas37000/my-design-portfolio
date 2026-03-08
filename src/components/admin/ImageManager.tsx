@@ -258,13 +258,14 @@ const ImageManager = () => {
     let successCount = 0;
 
     for (const file of Array.from(fileList)) {
-      const ext = file.name.split(".").pop();
+      const compressed = await compressToWebP(file);
+      const ext = compressed.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       const path = currentFolder ? `${currentFolder}/${fileName}` : fileName;
 
       const { error } = await supabase.storage
         .from(currentBucket)
-        .upload(path, file, { cacheControl: "3600", upsert: false });
+        .upload(path, compressed, { cacheControl: "3600", upsert: false });
 
       if (!error) successCount++;
     }
