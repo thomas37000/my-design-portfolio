@@ -167,7 +167,8 @@ const Hero = () => {
                 <div className="absolute inset-0 bg-primary/20 rounded-full blur-3xl" />
                 <img
                   src={content.hero.image}
-                  alt="Hero"
+                  alt={`Photo de ${content.hero.title}`}
+                  loading="lazy"
                   className="relative z-10 w-80 h-80 object-cover rounded-full border-4 border-primary/20 shadow-2xl"
                 />
               </div>

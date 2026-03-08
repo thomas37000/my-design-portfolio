@@ -18,7 +18,8 @@ const ProjectCard = ({ description, technos, titre, lien_url, github, img, organ
       <div className="relative overflow-hidden aspect-video">
         <img
           src={img}
-          alt={titre}
+          alt={`Projet ${titre} - ${description?.substring(0, 50)}`}
+          loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         {!fini && (
