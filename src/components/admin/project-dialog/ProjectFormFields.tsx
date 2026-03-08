@@ -1,9 +1,16 @@
+import { useState, useEffect, useCallback } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Image, Upload, Loader2 } from "lucide-react";
 import { ProjectFormData } from "./types";
 import ImagesManager from "./ImagesManager";
+import { supabase } from "@/integrations/supabase/client";
+
+const BUCKET = "project-images";
 
 interface ProjectFormFieldsProps {
   formData: ProjectFormData;
