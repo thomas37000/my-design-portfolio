@@ -587,6 +587,34 @@ const ImageManager = () => {
                       >
                         {compressing === file.name ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Image className="h-3.5 w-3.5" />}
                       </Button>
+                      <label
+                        className="inline-flex items-center justify-center h-8 w-8 rounded-md bg-secondary text-secondary-foreground cursor-pointer hover:bg-secondary/80 transition-colors"
+                        title="Uploader une nouvelle version"
+                      >
+                        <Upload className="h-3.5 w-3.5" />
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="sr-only"
+                          onChange={async (e) => {
+                            if (!e.target.files?.[0] || !currentBucket) return;
+                            const compressed = await compressToWebP(e.target.files[0]);
+                            const path = file.folder ? `${file.folder}/${file.name}` : file.name;
+                            setUploading(true);
+                            const { error } = await supabase.storage
+                              .from(currentBucket)
+                              .update(path, compressed, { cacheControl: "3600", upsert: true });
+                            setUploading(false);
+                            if (error) {
+                              toast({ title: "Erreur", description: "Impossible de remplacer l'image", variant: "destructive" });
+                            } else {
+                              toast({ title: "Succès", description: "Image remplacée" });
+                              fetchFiles();
+                            }
+                            e.target.value = "";
+                          }}
+                        />
+                      </label>
                       <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => setReplaceTarget(file)} title="Remplacer">
                         <RefreshCw className="h-3.5 w-3.5" />
                       </Button>
