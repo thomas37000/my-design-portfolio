@@ -65,7 +65,7 @@ interface BucketInfo {
 const ImageManager = () => {
   // Bucket state
   const [buckets, setBuckets] = useState<BucketInfo[]>([]);
-  const [currentBucket, setCurrentBucket] = useState<string>("");
+  const [currentBucket, setCurrentBucket] = useState<string>("cv-files");
   const [bucketsLoading, setBucketsLoading] = useState(true);
   const [newBucketOpen, setNewBucketOpen] = useState(false);
   const [newBucketId, setNewBucketId] = useState("");
