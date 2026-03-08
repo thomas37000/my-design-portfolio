@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Trash2, Upload, Image, Loader2 } from "lucide-react";
+import { Plus, Trash2, Upload, Image, Loader2, Pencil } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { compressToWebP } from "@/lib/imageCompression";
