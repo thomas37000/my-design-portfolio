@@ -90,10 +90,25 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
   };
 
   const pickFromStorage = (url: string) => {
-    if (!images.includes(url)) {
+    if (replaceIndex !== null) {
+      const newImages = [...images];
+      newImages[replaceIndex] = url;
+      onChange(newImages);
+      setReplaceIndex(null);
+    } else if (!images.includes(url)) {
       onChange([...images, url]);
     }
     setPickerOpen(false);
+  };
+
+  const openPickerForReplace = (index: number) => {
+    setReplaceIndex(index);
+    setPickerOpen(true);
+  };
+
+  const openPickerForAdd = () => {
+    setReplaceIndex(null);
+    setPickerOpen(true);
   };
 
   const handleDirectUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
