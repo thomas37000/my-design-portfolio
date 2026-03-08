@@ -31,7 +31,8 @@ const DesignProjectCard = ({
       <div className="relative overflow-hidden aspect-video">
         <img
           src={img}
-          alt={titre}
+          alt={`Projet ${titre} - ${description?.substring(0, 50)}`}
+          loading="lazy"
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-primary/0 group-hover:bg-primary/20 transition-colors duration-300" />

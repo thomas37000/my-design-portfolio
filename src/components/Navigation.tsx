@@ -31,7 +31,7 @@ const Navigation = () => {
       <div className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center">
           <Link to="/">
-              <h1 className="text-2xl font-bold text-foreground">Portfolio</h1>
+              <span className="text-2xl font-bold text-foreground">Portfolio</span>
           </Link>
 
           {/* Desktop Navigation */}
