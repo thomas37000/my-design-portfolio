@@ -10,6 +10,7 @@ import {
 import { Plus, Trash2, Upload, Image, Loader2 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { compressToWebP } from "@/lib/imageCompression";
 
 const BUCKET = "project-images";
 
