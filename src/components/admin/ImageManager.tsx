@@ -364,7 +364,7 @@ const ImageManager = () => {
       }
 
       toast({ title: "Compressé en WebP", description: `${formatSize(originalFile.size)} → ${formatSize(compressed.size)}` });
-      fetchFiles(currentBucket);
+      fetchFiles();
     } catch (err: any) {
       toast({ title: "Erreur", description: err?.message || "Échec de la compression", variant: "destructive" });
     } finally {
