@@ -328,6 +328,50 @@ const ImageManager = () => {
     toast({ title: "URL copiée", description: "L'URL a été copiée dans le presse-papiers" });
   };
 
+  const [compressing, setCompressing] = useState<string | null>(null);
+
+  const compressFile = async (file: StorageFile) => {
+    if (!currentBucket) return;
+    setCompressing(file.name);
+    try {
+      // Download original
+      const { data: blob, error: dlError } = await supabase.storage
+        .from(currentBucket)
+        .download(file.folder ? `${file.folder}/${file.name}` : file.name);
+      if (dlError || !blob) throw dlError;
+
+      const originalFile = new File([blob], file.name, { type: blob.type });
+      const compressed = await compressToWebP(originalFile);
+
+      if (compressed === originalFile) {
+        toast({ title: "Déjà optimisé", description: "L'image est déjà au format optimal." });
+        return;
+      }
+
+      const oldPath = file.folder ? `${file.folder}/${file.name}` : file.name;
+      const newName = file.name.replace(/\.[^.]+$/, "") + ".webp";
+      const newPath = file.folder ? `${file.folder}/${newName}` : newName;
+
+      // Upload compressed
+      const { error: upError } = await supabase.storage
+        .from(currentBucket)
+        .upload(newPath, compressed, { cacheControl: "3600", upsert: false });
+      if (upError) throw upError;
+
+      // Delete original if name changed
+      if (oldPath !== newPath) {
+        await supabase.storage.from(currentBucket).remove([oldPath]);
+      }
+
+      toast({ title: "Compressé en WebP", description: `${formatSize(originalFile.size)} → ${formatSize(compressed.size)}` });
+      fetchFiles(currentBucket);
+    } catch (err: any) {
+      toast({ title: "Erreur", description: err?.message || "Échec de la compression", variant: "destructive" });
+    } finally {
+      setCompressing(null);
+    }
+  };
+
   const handleCreateFolder = async () => {
     if (!newFolderName.trim() || !currentBucket) return;
     const folderPath = currentFolder
