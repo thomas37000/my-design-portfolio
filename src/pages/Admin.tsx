@@ -13,6 +13,7 @@ import SkillsManager from "@/components/admin/SkillsManager";
 import SettingsManager from "@/components/admin/SettingsManager";
 import CVManager from "@/components/admin/CVManager";
 import ContentManager from "@/components/admin/ContentManager";
+import ImageManager from "@/components/admin/ImageManager";
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -75,9 +76,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dev" className="w-full">
-          <TabsList className="grid w-full max-w-5xl grid-cols-7">
+          <TabsList className="grid w-full max-w-6xl grid-cols-8">
             <TabsTrigger value="dev">Projets Dev</TabsTrigger>
             <TabsTrigger value="design">Projets Design</TabsTrigger>
+            <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="skills">Compétences</TabsTrigger>
             <TabsTrigger value="cv">CV</TabsTrigger>
             <TabsTrigger value="content">Contenu</TabsTrigger>
@@ -116,6 +118,20 @@ const Admin = () => {
               </CardHeader>
               <CardContent>
                 <ProjectManager projectType="design" />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="images" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestionnaire d'images</CardTitle>
+                <CardDescription>
+                  Uploadez, modifiez et organisez les images de vos projets
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ImageManager />
               </CardContent>
             </Card>
           </TabsContent>
