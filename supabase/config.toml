@@ -2,3 +2,6 @@ project_id = "mfkjsmvcaytwiukxahqj"
 
 [functions.rate-limiter]
 verify_jwt = false
+
+[functions.manage-buckets]
+verify_jwt = false
