@@ -228,6 +228,45 @@ const ProjectFormFields = ({
         />
         <Label htmlFor="IA">Utilise l'IA</Label>
       </div>
+
+      {/* Image picker dialog for main image */}
+      <Dialog open={imgPickerOpen} onOpenChange={setImgPickerOpen}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Choisir une image principale</DialogTitle>
+          </DialogHeader>
+          {storageLoading ? (
+            <div className="flex justify-center py-12">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : storageImages.length === 0 ? (
+            <p className="text-center py-12 text-muted-foreground">
+              Aucune image disponible. Uploadez des images via l'onglet "Images".
+            </p>
+          ) : (
+            <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+              {storageImages.map((img) => (
+                <button
+                  key={img.name}
+                  type="button"
+                  onClick={() => {
+                    onFieldChange("img", img.publicUrl);
+                    setImgPickerOpen(false);
+                  }}
+                  className="aspect-square rounded-lg overflow-hidden border-2 border-transparent hover:border-primary transition-colors focus:outline-none focus:border-primary"
+                >
+                  <img
+                    src={img.publicUrl}
+                    alt={img.name}
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </>
   );
 };
