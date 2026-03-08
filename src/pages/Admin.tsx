@@ -122,6 +122,20 @@ const Admin = () => {
             </Card>
           </TabsContent>
 
+          <TabsContent value="images" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Gestionnaire d'images</CardTitle>
+                <CardDescription>
+                  Uploadez, modifiez et organisez les images de vos projets
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ImageManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
           <TabsContent value="skills" className="mt-6">
             <Card>
               <CardHeader>
