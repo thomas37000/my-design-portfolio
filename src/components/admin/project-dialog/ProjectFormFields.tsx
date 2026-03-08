@@ -26,6 +26,56 @@ const ProjectFormFields = ({
   projectType,
   onFieldChange,
 }: ProjectFormFieldsProps) => {
+  const [imgPickerOpen, setImgPickerOpen] = useState(false);
+  const [storageImages, setStorageImages] = useState<{ name: string; publicUrl: string }[]>([]);
+  const [storageLoading, setStorageLoading] = useState(false);
+  const [imgUploading, setImgUploading] = useState(false);
+
+  const fetchStorageImages = useCallback(async () => {
+    setStorageLoading(true);
+    try {
+      const allImages: { name: string; publicUrl: string }[] = [];
+      const listFolder = async (folder: string) => {
+        const { data } = await supabase.storage
+          .from(BUCKET)
+          .list(folder, { limit: 500, sortBy: { column: "created_at", order: "desc" } });
+        if (!data) return;
+        for (const item of data) {
+          const path = folder ? `${folder}/${item.name}` : item.name;
+          if (item.id === null) {
+            await listFolder(path);
+          } else if (item.name !== ".keep") {
+            const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
+            allImages.push({ name: path, publicUrl: urlData.publicUrl });
+          }
+        }
+      };
+      await listFolder("");
+      setStorageImages(allImages);
+    } catch { /* ignore */ } finally {
+      setStorageLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (imgPickerOpen) fetchStorageImages();
+  }, [imgPickerOpen, fetchStorageImages]);
+
+  const handleImgUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setImgUploading(true);
+    const ext = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
+    const { error } = await supabase.storage.from(BUCKET).upload(fileName, file, { cacheControl: "3600" });
+    if (!error) {
+      const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(fileName);
+      onFieldChange("img", urlData.publicUrl);
+    }
+    setImgUploading(false);
+    e.target.value = "";
+  };
+
   return (
     <>
       <div>
@@ -81,13 +131,34 @@ const ProjectFormFields = ({
       </div>
 
       <div>
-        <Label htmlFor="img">URL de l'image</Label>
-        <Input
-          id="img"
-          type="url"
-          value={formData.img}
-          onChange={(e) => onFieldChange("img", e.target.value)}
-        />
+        <Label htmlFor="img">Image principale</Label>
+        <div className="flex gap-2">
+          <Input
+            id="img"
+            type="url"
+            value={formData.img}
+            onChange={(e) => onFieldChange("img", e.target.value)}
+            placeholder="URL de l'image"
+            className="flex-1"
+          />
+          <Button type="button" variant="outline" size="icon" onClick={() => setImgPickerOpen(true)} title="Bibliothèque">
+            <Image className="h-4 w-4" />
+          </Button>
+          <div className="relative">
+            <Label
+              htmlFor="img-upload"
+              className="inline-flex items-center justify-center h-10 w-10 rounded-md border border-input bg-background cursor-pointer hover:bg-accent hover:text-accent-foreground transition-colors"
+            >
+              {imgUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            </Label>
+            <input id="img-upload" type="file" accept="image/*" className="sr-only" onChange={handleImgUpload} disabled={imgUploading} />
+          </div>
+        </div>
+        {formData.img && (
+          <div className="mt-2 h-20 w-32 rounded overflow-hidden border border-border">
+            <img src={formData.img} alt="Aperçu" className="h-full w-full object-cover" onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder.svg"; }} />
+          </div>
+        )}
       </div>
 
       {projectType === "dev" && (
