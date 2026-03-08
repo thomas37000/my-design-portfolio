@@ -27,6 +27,7 @@ interface ImagesManagerProps {
 const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
   const [newImageUrl, setNewImageUrl] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
   const [storageImages, setStorageImages] = useState<StorageImage[]>([]);
   const [storageLoading, setStorageLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
