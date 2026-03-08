@@ -43,6 +43,7 @@ import {
   Database,
   Pencil,
   Plus,
+  Download,
 } from "lucide-react";
 
 interface StorageFile {
@@ -576,6 +577,29 @@ const ImageManager = () => {
                     <div className="flex gap-1">
                       <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => copyUrl(file.publicUrl)} title="Copier l'URL">
                         <Copy className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="h-8 w-8"
+                        title="Télécharger"
+                        onClick={async () => {
+                          const { data, error } = await supabase.storage
+                            .from(currentBucket)
+                            .download(file.folder ? `${file.folder}/${file.name}` : file.name);
+                          if (error || !data) {
+                            toast({ title: "Erreur", description: "Impossible de télécharger", variant: "destructive" });
+                            return;
+                          }
+                          const url = URL.createObjectURL(data);
+                          const a = document.createElement("a");
+                          a.href = url;
+                          a.download = file.name;
+                          a.click();
+                          URL.revokeObjectURL(url);
+                        }}
+                      >
+                        <Download className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         size="icon"
