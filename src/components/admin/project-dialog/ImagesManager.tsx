@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Plus, Trash2, Upload, Image, Loader2 } from "lucide-react";
+import { Plus, Trash2, Upload, Image, Loader2, Pencil } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { compressToWebP } from "@/lib/imageCompression";
@@ -27,6 +27,7 @@ interface ImagesManagerProps {
 const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
   const [newImageUrl, setNewImageUrl] = useState("");
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [replaceIndex, setReplaceIndex] = useState<number | null>(null);
   const [storageImages, setStorageImages] = useState<StorageImage[]>([]);
   const [storageLoading, setStorageLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -89,10 +90,25 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
   };
 
   const pickFromStorage = (url: string) => {
-    if (!images.includes(url)) {
+    if (replaceIndex !== null) {
+      const newImages = [...images];
+      newImages[replaceIndex] = url;
+      onChange(newImages);
+      setReplaceIndex(null);
+    } else if (!images.includes(url)) {
       onChange([...images, url]);
     }
     setPickerOpen(false);
+  };
+
+  const openPickerForReplace = (index: number) => {
+    setReplaceIndex(index);
+    setPickerOpen(true);
+  };
+
+  const openPickerForAdd = () => {
+    setReplaceIndex(null);
+    setPickerOpen(true);
   };
 
   const handleDirectUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -177,6 +193,16 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
                   type="button"
                   variant="ghost"
                   size="icon"
+                  className="h-8 w-8"
+                  onClick={() => openPickerForReplace(index)}
+                  title="Modifier depuis la bibliothèque"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
                   className="h-8 w-8 text-destructive hover:text-destructive"
                   onClick={() => removeImage(index)}
                 >
@@ -214,7 +240,7 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
           </Button>
         </div>
 
-        <Button type="button" variant="outline" onClick={() => setPickerOpen(true)}>
+        <Button type="button" variant="outline" onClick={openPickerForAdd}>
           <Image className="h-4 w-4 mr-1" />
           Bibliothèque
         </Button>
@@ -246,10 +272,12 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
       )}
 
       {/* Storage picker dialog */}
-      <Dialog open={pickerOpen} onOpenChange={setPickerOpen}>
+      <Dialog open={pickerOpen} onOpenChange={(open) => { setPickerOpen(open); if (!open) setReplaceIndex(null); }}>
         <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Choisir une image de la bibliothèque</DialogTitle>
+            <DialogTitle>
+              {replaceIndex !== null ? "Remplacer l'image depuis la bibliothèque" : "Choisir une image de la bibliothèque"}
+            </DialogTitle>
           </DialogHeader>
           {storageLoading ? (
             <div className="flex justify-center py-12">
