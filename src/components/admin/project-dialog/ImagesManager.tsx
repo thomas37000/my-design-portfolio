@@ -10,6 +10,7 @@ import {
 import { Plus, Trash2, Upload, Image, Loader2 } from "lucide-react";
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { compressToWebP } from "@/lib/imageCompression";
 
 const BUCKET = "project-images";
 
@@ -102,12 +103,13 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
     const newUrls: string[] = [];
 
     for (const file of Array.from(fileList)) {
-      const ext = file.name.split(".").pop();
+      const compressed = await compressToWebP(file);
+      const ext = compressed.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
 
       const { error } = await supabase.storage
         .from(BUCKET)
-        .upload(fileName, file, { cacheControl: "3600", upsert: false });
+        .upload(fileName, compressed, { cacheControl: "3600", upsert: false });
 
       if (!error) {
         const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(fileName);

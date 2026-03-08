@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { compressToWebP } from "@/lib/imageCompression";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -257,13 +258,14 @@ const ImageManager = () => {
     let successCount = 0;
 
     for (const file of Array.from(fileList)) {
-      const ext = file.name.split(".").pop();
+      const compressed = await compressToWebP(file);
+      const ext = compressed.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
       const path = currentFolder ? `${currentFolder}/${fileName}` : fileName;
 
       const { error } = await supabase.storage
         .from(currentBucket)
-        .upload(path, file, { cacheControl: "3600", upsert: false });
+        .upload(path, compressed, { cacheControl: "3600", upsert: false });
 
       if (!error) successCount++;
     }
@@ -281,7 +283,7 @@ const ImageManager = () => {
   const handleReplace = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!replaceTarget || !e.target.files?.[0] || !currentBucket) return;
 
-    const file = e.target.files[0];
+    const file = await compressToWebP(e.target.files[0]);
     const path = replaceTarget.folder
       ? `${replaceTarget.folder}/${replaceTarget.name}`
       : replaceTarget.name;
