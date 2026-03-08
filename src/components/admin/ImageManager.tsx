@@ -577,6 +577,16 @@ const ImageManager = () => {
                       <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => copyUrl(file.publicUrl)} title="Copier l'URL">
                         <Copy className="h-3.5 w-3.5" />
                       </Button>
+                      <Button
+                        size="icon"
+                        variant="secondary"
+                        className="h-8 w-8"
+                        onClick={() => compressFile(file)}
+                        disabled={compressing === file.name || file.name.endsWith(".webp")}
+                        title="Compresser en WebP"
+                      >
+                        {compressing === file.name ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Image className="h-3.5 w-3.5" />}
+                      </Button>
                       <Button size="icon" variant="secondary" className="h-8 w-8" onClick={() => setReplaceTarget(file)} title="Remplacer">
                         <RefreshCw className="h-3.5 w-3.5" />
                       </Button>
