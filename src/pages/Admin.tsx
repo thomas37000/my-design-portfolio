@@ -76,9 +76,10 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dev" className="w-full">
-          <TabsList className="grid w-full max-w-5xl grid-cols-7">
+          <TabsList className="grid w-full max-w-6xl grid-cols-8">
             <TabsTrigger value="dev">Projets Dev</TabsTrigger>
             <TabsTrigger value="design">Projets Design</TabsTrigger>
+            <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="skills">Compétences</TabsTrigger>
             <TabsTrigger value="cv">CV</TabsTrigger>
             <TabsTrigger value="content">Contenu</TabsTrigger>
