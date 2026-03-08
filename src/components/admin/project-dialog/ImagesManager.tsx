@@ -103,7 +103,8 @@ const ImagesManager = ({ images, onChange }: ImagesManagerProps) => {
     const newUrls: string[] = [];
 
     for (const file of Array.from(fileList)) {
-      const ext = file.name.split(".").pop();
+      const compressed = await compressToWebP(file);
+      const ext = compressed.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
 
       const { error } = await supabase.storage
