@@ -45,6 +45,7 @@ import {
   Plus,
   Download,
 } from "lucide-react";
+import AIImageGenerator from "./AIImageGenerator";
 
 interface StorageFile {
   name: string;
