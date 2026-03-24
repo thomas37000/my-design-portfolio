@@ -475,6 +475,14 @@ const ImageManager = () => {
         )}
       </div>
 
+      {/* AI Image Generator */}
+      <AIImageGenerator
+        buckets={buckets}
+        currentBucket={currentBucket}
+        currentFolder={currentFolder}
+        onImageUploaded={fetchFiles}
+      />
+
       {/* File toolbar */}
       {currentBucket && (
         <>
