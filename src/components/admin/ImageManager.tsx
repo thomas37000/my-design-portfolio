@@ -45,6 +45,7 @@ import {
   Plus,
   Download,
 } from "lucide-react";
+import AIImageGenerator from "./AIImageGenerator";
 
 interface StorageFile {
   name: string;
@@ -473,6 +474,14 @@ const ImageManager = () => {
           </div>
         )}
       </div>
+
+      {/* AI Image Generator */}
+      <AIImageGenerator
+        buckets={buckets}
+        currentBucket={currentBucket}
+        currentFolder={currentFolder}
+        onImageUploaded={fetchFiles}
+      />
 
       {/* File toolbar */}
       {currentBucket && (
