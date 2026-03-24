@@ -11,7 +11,7 @@ export const useAuth = () => {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminChecked, setAdminChecked] = useState(false);
-  const adminTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const adminTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const adminLoginTimeRef = useRef<number | null>(null);
 
   const clearAdminTimeout = useCallback(() => {
