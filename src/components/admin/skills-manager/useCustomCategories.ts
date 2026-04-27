@@ -61,5 +61,46 @@ export const useCustomCategories = () => {
     return true;
   };
 
-  return { categories, loading, addCategory, refetch: fetchCategories };
+  const deleteCategory = async (name: string): Promise<boolean> => {
+    // Supprime toutes les compétences liées à cette catégorie
+    const { error: skillsError } = await supabase
+      .from("skills")
+      .delete()
+      .eq("category", name);
+
+    if (skillsError) {
+      toast({
+        title: "Erreur",
+        description: "Impossible de supprimer les compétences liées",
+        variant: "destructive",
+      });
+      return false;
+    }
+
+    // Retire la catégorie de la liste personnalisée (si présente)
+    const next = categories.filter((c) => c !== name);
+    if (next.length !== categories.length) {
+      const { error } = await supabase
+        .from("settings")
+        .upsert(
+          { key: SETTING_KEY, value: { categories: next } as any },
+          { onConflict: "key" }
+        );
+
+      if (error) {
+        toast({
+          title: "Erreur",
+          description: "Impossible de supprimer la catégorie",
+          variant: "destructive",
+        });
+        return false;
+      }
+      setCategories(next);
+    }
+
+    toast({ title: "Catégorie supprimée" });
+    return true;
+  };
+
+  return { categories, loading, addCategory, deleteCategory, refetch: fetchCategories };
 };
