@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { useDisplayMode, DisplayMode } from "@/hooks/useDisplayMode";
-import { Button } from "@/components/ui/button";
+import { useProjectOrder, ProjectOrder } from "@/hooks/useProjectOrder";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, LayoutGrid, GalleryHorizontal } from "lucide-react";
+import { Loader2, LayoutGrid, GalleryHorizontal, Code2, Palette } from "lucide-react";
 
 const SettingsManager = () => {
   const { displayMode, loading, updateDisplayMode } = useDisplayMode();
+  const { projectOrder, loading: orderLoading, updateProjectOrder } = useProjectOrder();
   const [saving, setSaving] = useState(false);
+  const [savingOrder, setSavingOrder] = useState(false);
   const { toast } = useToast();
 
   const handleToggle = async () => {
@@ -31,7 +33,29 @@ const SettingsManager = () => {
     setSaving(false);
   };
 
-  if (loading) {
+  const handleOrderToggle = async () => {
+    setSavingOrder(true);
+    const newOrder: ProjectOrder = projectOrder === "design-first" ? "dev-first" : "design-first";
+    const success = await updateProjectOrder(newOrder);
+
+    if (success) {
+      toast({
+        title: "Ordre mis à jour",
+        description: newOrder === "dev-first"
+          ? "Les projets Dev s'affichent désormais avant les projets Design."
+          : "Les projets Design s'affichent désormais avant les projets Dev.",
+      });
+    } else {
+      toast({
+        title: "Erreur",
+        description: "Impossible de mettre à jour l'ordre des projets.",
+        variant: "destructive",
+      });
+    }
+    setSavingOrder(false);
+  };
+
+  if (loading || orderLoading) {
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
@@ -68,6 +92,37 @@ const SettingsManager = () => {
             checked={displayMode === "grid"}
             onCheckedChange={handleToggle}
             disabled={saving}
+          />
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between p-4 border rounded-lg">
+        <div className="flex items-center gap-4">
+          <div className="p-2 rounded-md bg-muted">
+            {projectOrder === "dev-first" ? (
+              <Code2 className="h-5 w-5" />
+            ) : (
+              <Palette className="h-5 w-5" />
+            )}
+          </div>
+          <div>
+            <Label htmlFor="project-order" className="text-base font-medium">
+              Projets Dev avant Design
+            </Label>
+            <p className="text-sm text-muted-foreground">
+              {projectOrder === "dev-first"
+                ? "Les projets Dev s'affichent avant les projets Web Design"
+                : "Les projets Web Design s'affichent avant les projets Dev"}
+            </p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          {savingOrder && <Loader2 className="h-4 w-4 animate-spin" />}
+          <Switch
+            id="project-order"
+            checked={projectOrder === "dev-first"}
+            onCheckedChange={handleOrderToggle}
+            disabled={savingOrder}
           />
         </div>
       </div>

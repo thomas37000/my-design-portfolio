@@ -5,15 +5,27 @@ import Projects from "@/components/Projects";
 import DesignProjects from "@/components/DesignProjects";
 import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
+import { useProjectOrder } from "@/hooks/useProjectOrder";
 
 const Index = () => {
+  const { projectOrder } = useProjectOrder();
+
   return (
     <div className="min-h-screen">
       <Navigation />
       <Hero />
       <About />
-      <DesignProjects />
-      <Projects />
+      {projectOrder === "dev-first" ? (
+        <>
+          <Projects />
+          <DesignProjects />
+        </>
+      ) : (
+        <>
+          <DesignProjects />
+          <Projects />
+        </>
+      )}
       <Skills />
       <Contact />
       <footer className="py-8 text-center text-muted-foreground border-t">
