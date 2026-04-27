@@ -1,3 +1,4 @@
+import { useState, useMemo, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,7 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus } from "lucide-react";
-import { SkillFormData, SKILL_CATEGORIES } from "./types";
+import { SkillFormData, SKILL_CATEGORIES, Skill } from "./types";
 
 interface SkillDialogProps {
   open: boolean;
@@ -27,7 +28,10 @@ interface SkillDialogProps {
   onSave: () => void;
   onAddClick: () => void;
   saving: boolean;
+  skills: Skill[];
 }
+
+const NEW_CATEGORY_VALUE = "__new__";
 
 const SkillDialog = ({
   open,
@@ -38,7 +42,39 @@ const SkillDialog = ({
   onSave,
   onAddClick,
   saving,
+  skills,
 }: SkillDialogProps) => {
+  const [creatingNew, setCreatingNew] = useState(false);
+  const [newCategory, setNewCategory] = useState("");
+
+  const allCategories = useMemo(() => {
+    const fromSkills = skills.map((s) => s.category).filter(Boolean);
+    return Array.from(new Set([...SKILL_CATEGORIES, ...fromSkills])).sort();
+  }, [skills]);
+
+  useEffect(() => {
+    if (!open) {
+      setCreatingNew(false);
+      setNewCategory("");
+    }
+  }, [open]);
+
+  const handleCategoryChange = (value: string) => {
+    if (value === NEW_CATEGORY_VALUE) {
+      setCreatingNew(true);
+      setNewCategory("");
+      onFieldChange("category", "");
+    } else {
+      setCreatingNew(false);
+      onFieldChange("category", value);
+    }
+  };
+
+  const handleNewCategoryChange = (value: string) => {
+    setNewCategory(value);
+    onFieldChange("category", value);
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -65,21 +101,48 @@ const SkillDialog = ({
           </div>
           <div className="space-y-2">
             <Label htmlFor="category">Catégorie *</Label>
-            <Select
-              value={formData.category}
-              onValueChange={(value) => onFieldChange("category", value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Sélectionner une catégorie" />
-              </SelectTrigger>
-              <SelectContent>
-                {SKILL_CATEGORIES.map((cat) => (
-                  <SelectItem key={cat} value={cat}>
-                    {cat}
+            {creatingNew ? (
+              <div className="space-y-2">
+                <Input
+                  id="category"
+                  value={newCategory}
+                  onChange={(e) => handleNewCategoryChange(e.target.value)}
+                  placeholder="Nom de la nouvelle catégorie"
+                  autoFocus
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setCreatingNew(false);
+                    setNewCategory("");
+                    onFieldChange("category", "");
+                  }}
+                >
+                  Choisir une catégorie existante
+                </Button>
+              </div>
+            ) : (
+              <Select
+                value={formData.category}
+                onValueChange={handleCategoryChange}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionner une catégorie" />
+                </SelectTrigger>
+                <SelectContent>
+                  {allCategories.map((cat) => (
+                    <SelectItem key={cat} value={cat}>
+                      {cat}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value={NEW_CATEGORY_VALUE}>
+                    + Nouvelle catégorie
                   </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+                </SelectContent>
+              </Select>
+            )}
           </div>
           <div className="space-y-2">
             <Label htmlFor="icon">Icône (optionnel)</Label>
