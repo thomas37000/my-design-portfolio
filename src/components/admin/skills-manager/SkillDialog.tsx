@@ -29,6 +29,7 @@ interface SkillDialogProps {
   onAddClick: () => void;
   saving: boolean;
   skills: Skill[];
+  extraCategories?: string[];
 }
 
 const NEW_CATEGORY_VALUE = "__new__";
@@ -43,14 +44,17 @@ const SkillDialog = ({
   onAddClick,
   saving,
   skills,
+  extraCategories = [],
 }: SkillDialogProps) => {
   const [creatingNew, setCreatingNew] = useState(false);
   const [newCategory, setNewCategory] = useState("");
 
   const allCategories = useMemo(() => {
     const fromSkills = skills.map((s) => s.category).filter(Boolean);
-    return Array.from(new Set([...SKILL_CATEGORIES, ...fromSkills])).sort();
-  }, [skills]);
+    return Array.from(
+      new Set([...SKILL_CATEGORIES, ...fromSkills, ...extraCategories])
+    ).sort();
+  }, [skills, extraCategories]);
 
   useEffect(() => {
     if (!open) {
