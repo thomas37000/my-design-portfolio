@@ -132,5 +132,6 @@ export const useSkillsManager = () => {
     openEditDialog,
     handleSave,
     handleDelete,
+    refetchSkills: fetchSkills,
   };
 };
