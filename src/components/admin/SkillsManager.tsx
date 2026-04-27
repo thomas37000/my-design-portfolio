@@ -34,6 +34,7 @@ const SkillsManager = () => {
           onSave={handleSave}
           onAddClick={openAddDialog}
           saving={saving}
+          skills={skills}
         />
       </div>
 
