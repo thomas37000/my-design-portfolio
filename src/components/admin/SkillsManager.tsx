@@ -18,9 +18,15 @@ const SkillsManager = () => {
     openEditDialog,
     handleSave,
     handleDelete,
+    refetchSkills,
   } = useSkillsManager();
 
-  const { categories: customCategories, addCategory } = useCustomCategories();
+  const { categories: customCategories, addCategory, deleteCategory } = useCustomCategories();
+
+  const handleDeleteCategory = async (category: string) => {
+    const ok = await deleteCategory(category);
+    if (ok) refetchSkills();
+  };
 
   if (loading) {
     return <div className="text-center py-8">Chargement...</div>;
@@ -48,6 +54,7 @@ const SkillsManager = () => {
         skills={skills}
         onEdit={openEditDialog}
         onDelete={handleDelete}
+        onDeleteCategory={handleDeleteCategory}
       />
     </div>
   );
