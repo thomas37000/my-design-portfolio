@@ -1,14 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { Pencil, Trash2 } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Skill, groupSkillsByCategory } from "./types";
 
 interface SkillsListProps {
   skills: Skill[];
   onEdit: (skill: Skill) => void;
   onDelete: (id: number) => void;
+  onDeleteCategory?: (category: string) => void;
 }
 
-const SkillsList = ({ skills, onEdit, onDelete }: SkillsListProps) => {
+const SkillsList = ({ skills, onEdit, onDelete, onDeleteCategory }: SkillsListProps) => {
   const groupedSkills = groupSkillsByCategory(skills);
 
   if (Object.keys(groupedSkills).length === 0) {
@@ -23,7 +35,45 @@ const SkillsList = ({ skills, onEdit, onDelete }: SkillsListProps) => {
     <div className="space-y-6">
       {Object.entries(groupedSkills).map(([category, categorySkills]) => (
         <div key={category} className="space-y-3">
-          <h3 className="font-semibold text-lg">{category}</h3>
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold text-lg">{category}</h3>
+            {onDeleteCategory && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-destructive hover:text-destructive"
+                    title="Supprimer la catégorie"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Supprimer la catégorie « {category} » ?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Cette action est irréversible. Toutes les compétences
+                      reliées à cette catégorie ({categorySkills.length}{" "}
+                      {categorySkills.length > 1 ? "compétences" : "compétence"})
+                      seront également supprimées.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => onDeleteCategory(category)}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Supprimer
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             {categorySkills.map((skill) => (
               <div
