@@ -21,14 +21,18 @@ const Projects = () => {
     try {
       const { data, error } = await supabase
         .from("dev_projects")
-        .select("*")
+        .select("*, dev_project_skills(skills(name))")
         .eq("hidden", false)
         .order("finish_date", { ascending: false });
 
       if (error) {
         console.error(error);
       } else {
-        setProjects(data as unknown as Dev_project[]);
+        const mapped = (data as any[]).map((p) => ({
+          ...p,
+          technos: p.dev_project_skills?.map((s: any) => s.skills?.name).filter(Boolean) ?? [],
+        }));
+        setProjects(mapped as unknown as Dev_project[]);
       }
     } catch (error) {
       console.error(error);
