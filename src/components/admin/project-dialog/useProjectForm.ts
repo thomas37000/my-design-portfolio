@@ -127,9 +127,7 @@ export const useProjectForm = ({
 
       if (projectType === "dev") {
         dataToSave.github = formData.github.trim() || null;
-        dataToSave.technos = parseArrayField(formData.technos);
       } else {
-        dataToSave.logiciels = parseArrayField(formData.logiciels);
         dataToSave.tags = parseArrayField(formData.tags);
         dataToSave.images = formData.images;
       }

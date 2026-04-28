@@ -21,13 +21,17 @@ const DesignProjects = () => {
     try {
       const { data, error } = await supabase
         .from("designer_projects")
-        .select("*")
+        .select("*, designer_project_skills(skills(name))")
         .order("year", { ascending: false });
 
       if (error) {
         console.error(error);
       } else {
-        setProjects(data as unknown as Designer_project[]);
+        const mapped = (data as any[]).map((p) => ({
+          ...p,
+          logiciels: p.designer_project_skills?.map((s: any) => s.skills?.name).filter(Boolean) ?? [],
+        }));
+        setProjects(mapped as unknown as Designer_project[]);
       }
     } catch (error) {
       console.error(error);

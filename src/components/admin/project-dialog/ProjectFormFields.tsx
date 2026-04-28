@@ -96,25 +96,15 @@ const ProjectFormFields = ({
       </div>
 
       {projectType === "dev" && (
-        <>
-          <div>
-            <Label htmlFor="github">GitHub URL</Label>
-            <Input id="github" type="url" value={formData.github} onChange={(e) => onFieldChange("github", e.target.value)} />
-          </div>
-          <div>
-            <Label htmlFor="technos">Technologies (séparées par des virgules)</Label>
-            <Input id="technos" value={formData.technos} onChange={(e) => onFieldChange("technos", e.target.value)} placeholder="React, TypeScript, Node.js" />
-          </div>
-        </>
+        <div>
+          <Label htmlFor="github">GitHub URL</Label>
+          <Input id="github" type="url" value={formData.github} onChange={(e) => onFieldChange("github", e.target.value)} />
+        </div>
       )}
 
       {projectType === "design" && (
         <>
           <ImagesManager images={formData.images} onChange={(images) => onFieldChange("images", images)} />
-          <div>
-            <Label htmlFor="logiciels">Logiciels (séparés par des virgules)</Label>
-            <Input id="logiciels" value={formData.logiciels} onChange={(e) => onFieldChange("logiciels", e.target.value)} placeholder="Figma, Photoshop, Illustrator" />
-          </div>
           <div>
             <Label htmlFor="tags">Tags (séparés par des virgules)</Label>
             <Input id="tags" value={formData.tags} onChange={(e) => onFieldChange("tags", e.target.value)} placeholder="UI/UX, Web Design, Branding" />
