@@ -1,6 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { Badge } from "./ui/badge";
-import { Code, Palette, Database, Wrench, Layers, Server, MoreHorizontal } from "lucide-react";
+import {
+  Code,
+  Palette,
+  Database,
+  Wrench,
+  Layers,
+  Server,
+  MoreHorizontal,
+  icons as lucideIcons,
+  LucideIcon,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,14 +24,23 @@ interface Skill {
   icon: string | null;
 }
 
-const categoryIcons: Record<string, React.ReactNode> = {
-  "Frontend": <Code className="w-6 h-6" />,
-  "Backend": <Server className="w-6 h-6" />,
-  "Base de données": <Database className="w-6 h-6" />,
-  "Outils": <Wrench className="w-6 h-6" />,
-  "Design": <Palette className="w-6 h-6" />,
-  "DevOps": <Layers className="w-6 h-6" />,
-  "Autres": <MoreHorizontal className="w-6 h-6" />,
+const defaultCategoryIcons: Record<string, LucideIcon> = {
+  "Frontend": Code,
+  "Backend": Server,
+  "Base de données": Database,
+  "Outils": Wrench,
+  "Design": Palette,
+  "DevOps": Layers,
+  "Autres": MoreHorizontal,
+};
+
+const renderCategoryIcon = (category: string, customIcon?: string | null) => {
+  if (customIcon && (lucideIcons as any)[customIcon]) {
+    const Icon = (lucideIcons as any)[customIcon] as LucideIcon;
+    return <Icon className="w-6 h-6" />;
+  }
+  const Default = defaultCategoryIcons[category] || MoreHorizontal;
+  return <Default className="w-6 h-6" />;
 };
 
 const Skills = () => {
