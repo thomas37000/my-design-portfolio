@@ -5,6 +5,7 @@ import Projects from "@/components/Projects";
 import DesignProjects from "@/components/DesignProjects";
 import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
+import BackToTop from "@/components/BackToTop";
 import { useProjectOrder } from "@/hooks/useProjectOrder";
 
 const Index = () => {
@@ -31,6 +32,7 @@ const Index = () => {
       <footer className="py-8 text-center text-muted-foreground border-t">
         <p>© 2026 Portfolio réalisé par Thomas Chalanson. Tous droits réservés.</p>
       </footer>
+      <BackToTop />
     </div>
   );
 };
