@@ -167,7 +167,7 @@ const Skills = () => {
             >
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-primary text-primary-foreground rounded-lg">
-                  {categoryIcons[category] || <MoreHorizontal className="w-6 h-6" />}
+                  {renderCategoryIcon(category, categoryIconMap[category])}
                 </div>
                 <h3 className="text-xl font-bold">{category}</h3>
               </div>
