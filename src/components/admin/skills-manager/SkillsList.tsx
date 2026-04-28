@@ -44,10 +44,19 @@ const SkillsList = ({
 
   return (
     <div className="space-y-6">
-      {Object.entries(groupedSkills).map(([category, categorySkills]) => (
+      {Object.entries(groupedSkills).map(([category, categorySkills]) => {
+        const meta = categoriesMeta.find((c) => c.name === category);
+        return (
         <div key={category} className="space-y-3">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-lg">{category}</h3>
+            {onUpdateCategory && (
+              <EditCategoryDialog
+                categoryName={category}
+                currentIcon={meta?.icon}
+                onSave={(newName, icon) => onUpdateCategory(category, newName, icon)}
+              />
+            )}
             {onDeleteCategory && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
