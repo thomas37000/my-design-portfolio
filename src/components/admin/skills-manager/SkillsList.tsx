@@ -121,7 +121,8 @@ const SkillsList = ({
             ))}
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 };
