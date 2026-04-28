@@ -12,15 +12,26 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Skill, groupSkillsByCategory } from "./types";
+import EditCategoryDialog from "./EditCategoryDialog";
+import { CategoryMeta } from "./useCustomCategories";
 
 interface SkillsListProps {
   skills: Skill[];
   onEdit: (skill: Skill) => void;
   onDelete: (id: number) => void;
   onDeleteCategory?: (category: string) => void;
+  onUpdateCategory?: (oldName: string, newName: string, icon: string | null) => Promise<boolean>;
+  categoriesMeta?: CategoryMeta[];
 }
 
-const SkillsList = ({ skills, onEdit, onDelete, onDeleteCategory }: SkillsListProps) => {
+const SkillsList = ({
+  skills,
+  onEdit,
+  onDelete,
+  onDeleteCategory,
+  onUpdateCategory,
+  categoriesMeta = [],
+}: SkillsListProps) => {
   const groupedSkills = groupSkillsByCategory(skills);
 
   if (Object.keys(groupedSkills).length === 0) {
@@ -33,10 +44,19 @@ const SkillsList = ({ skills, onEdit, onDelete, onDeleteCategory }: SkillsListPr
 
   return (
     <div className="space-y-6">
-      {Object.entries(groupedSkills).map(([category, categorySkills]) => (
+      {Object.entries(groupedSkills).map(([category, categorySkills]) => {
+        const meta = categoriesMeta.find((c) => c.name === category);
+        return (
         <div key={category} className="space-y-3">
           <div className="flex items-center gap-2">
             <h3 className="font-semibold text-lg">{category}</h3>
+            {onUpdateCategory && (
+              <EditCategoryDialog
+                categoryName={category}
+                currentIcon={meta?.icon}
+                onSave={(newName, icon) => onUpdateCategory(category, newName, icon)}
+              />
+            )}
             {onDeleteCategory && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
@@ -101,7 +121,8 @@ const SkillsList = ({ skills, onEdit, onDelete, onDeleteCategory }: SkillsListPr
             ))}
           </div>
         </div>
-      ))}
+        );
+      })}
     </div>
   );
 };

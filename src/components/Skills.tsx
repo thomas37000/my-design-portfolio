@@ -1,6 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import { Badge } from "./ui/badge";
-import { Code, Palette, Database, Wrench, Layers, Server, MoreHorizontal } from "lucide-react";
+import {
+  Code,
+  Palette,
+  Database,
+  Wrench,
+  Layers,
+  Server,
+  MoreHorizontal,
+  icons as lucideIcons,
+  LucideIcon,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -14,18 +24,28 @@ interface Skill {
   icon: string | null;
 }
 
-const categoryIcons: Record<string, React.ReactNode> = {
-  "Frontend": <Code className="w-6 h-6" />,
-  "Backend": <Server className="w-6 h-6" />,
-  "Base de données": <Database className="w-6 h-6" />,
-  "Outils": <Wrench className="w-6 h-6" />,
-  "Design": <Palette className="w-6 h-6" />,
-  "DevOps": <Layers className="w-6 h-6" />,
-  "Autres": <MoreHorizontal className="w-6 h-6" />,
+const defaultCategoryIcons: Record<string, LucideIcon> = {
+  "Frontend": Code,
+  "Backend": Server,
+  "Base de données": Database,
+  "Outils": Wrench,
+  "Design": Palette,
+  "DevOps": Layers,
+  "Autres": MoreHorizontal,
+};
+
+const renderCategoryIcon = (category: string, customIcon?: string | null) => {
+  if (customIcon && (lucideIcons as any)[customIcon]) {
+    const Icon = (lucideIcons as any)[customIcon] as LucideIcon;
+    return <Icon className="w-6 h-6" />;
+  }
+  const Default = defaultCategoryIcons[category] || MoreHorizontal;
+  return <Default className="w-6 h-6" />;
 };
 
 const Skills = () => {
   const [groupedSkills, setGroupedSkills] = useState<Record<string, Skill[]>>({});
+  const [categoryIconMap, setCategoryIconMap] = useState<Record<string, string | null>>({});
   const [loading, setLoading] = useState(true);
   
   const sectionRef = useRef<HTMLElement>(null);
@@ -33,26 +53,38 @@ const Skills = () => {
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchSkills = async () => {
-      const { data, error } = await supabase
-        .from("skills")
-        .select("*")
-        .order("category", { ascending: true });
+    const fetchData = async () => {
+      const [skillsRes, settingsRes] = await Promise.all([
+        supabase.from("skills").select("*").order("category", { ascending: true }),
+        supabase
+          .from("settings")
+          .select("value")
+          .eq("key", "custom_skill_categories")
+          .maybeSingle(),
+      ]);
 
-      if (!error && data) {
-        const grouped = data.reduce((acc, skill) => {
-          if (!acc[skill.category]) {
-            acc[skill.category] = [];
-          }
+      if (!skillsRes.error && skillsRes.data) {
+        const grouped = skillsRes.data.reduce((acc, skill) => {
+          if (!acc[skill.category]) acc[skill.category] = [];
           acc[skill.category].push(skill);
           return acc;
         }, {} as Record<string, Skill[]>);
         setGroupedSkills(grouped);
       }
+
+      const value: any = settingsRes.data?.value;
+      if (value && Array.isArray(value.categories)) {
+        const map: Record<string, string | null> = {};
+        value.categories.forEach((c: any) => {
+          if (typeof c === "object" && c?.name) map[c.name] = c.icon ?? null;
+        });
+        setCategoryIconMap(map);
+      }
+
       setLoading(false);
     };
 
-    fetchSkills();
+    fetchData();
   }, []);
 
   const categories = Object.keys(groupedSkills);
@@ -135,7 +167,7 @@ const Skills = () => {
             >
               <div className="flex items-center gap-3 mb-4">
                 <div className="p-2 bg-primary text-primary-foreground rounded-lg">
-                  {categoryIcons[category] || <MoreHorizontal className="w-6 h-6" />}
+                  {renderCategoryIcon(category, categoryIconMap[category])}
                 </div>
                 <h3 className="text-xl font-bold">{category}</h3>
               </div>

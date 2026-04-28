@@ -21,11 +21,17 @@ const SkillsManager = () => {
     refetchSkills,
   } = useSkillsManager();
 
-  const { categories: customCategories, addCategory, deleteCategory } = useCustomCategories();
+  const { categories: customCategories, categoriesMeta, addCategory, updateCategory, deleteCategory } = useCustomCategories();
 
   const handleDeleteCategory = async (category: string) => {
     const ok = await deleteCategory(category);
     if (ok) refetchSkills();
+  };
+
+  const handleUpdateCategory = async (oldName: string, newName: string, icon: string | null) => {
+    const ok = await updateCategory(oldName, newName, icon);
+    if (ok) refetchSkills();
+    return ok;
   };
 
   if (loading) {
@@ -55,6 +61,8 @@ const SkillsManager = () => {
         onEdit={openEditDialog}
         onDelete={handleDelete}
         onDeleteCategory={handleDeleteCategory}
+        onUpdateCategory={handleUpdateCategory}
+        categoriesMeta={categoriesMeta}
       />
     </div>
   );
