@@ -45,6 +45,7 @@ const renderCategoryIcon = (category: string, customIcon?: string | null) => {
 
 const Skills = () => {
   const [groupedSkills, setGroupedSkills] = useState<Record<string, Skill[]>>({});
+  const [categoryIconMap, setCategoryIconMap] = useState<Record<string, string | null>>({});
   const [loading, setLoading] = useState(true);
   
   const sectionRef = useRef<HTMLElement>(null);
@@ -52,26 +53,38 @@ const Skills = () => {
   const gridRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const fetchSkills = async () => {
-      const { data, error } = await supabase
-        .from("skills")
-        .select("*")
-        .order("category", { ascending: true });
+    const fetchData = async () => {
+      const [skillsRes, settingsRes] = await Promise.all([
+        supabase.from("skills").select("*").order("category", { ascending: true }),
+        supabase
+          .from("settings")
+          .select("value")
+          .eq("key", "custom_skill_categories")
+          .maybeSingle(),
+      ]);
 
-      if (!error && data) {
-        const grouped = data.reduce((acc, skill) => {
-          if (!acc[skill.category]) {
-            acc[skill.category] = [];
-          }
+      if (!skillsRes.error && skillsRes.data) {
+        const grouped = skillsRes.data.reduce((acc, skill) => {
+          if (!acc[skill.category]) acc[skill.category] = [];
           acc[skill.category].push(skill);
           return acc;
         }, {} as Record<string, Skill[]>);
         setGroupedSkills(grouped);
       }
+
+      const value: any = settingsRes.data?.value;
+      if (value && Array.isArray(value.categories)) {
+        const map: Record<string, string | null> = {};
+        value.categories.forEach((c: any) => {
+          if (typeof c === "object" && c?.name) map[c.name] = c.icon ?? null;
+        });
+        setCategoryIconMap(map);
+      }
+
       setLoading(false);
     };
 
-    fetchSkills();
+    fetchData();
   }, []);
 
   const categories = Object.keys(groupedSkills);
