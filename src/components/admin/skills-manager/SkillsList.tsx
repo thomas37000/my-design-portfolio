@@ -12,15 +12,26 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Skill, groupSkillsByCategory } from "./types";
+import EditCategoryDialog from "./EditCategoryDialog";
+import { CategoryMeta } from "./useCustomCategories";
 
 interface SkillsListProps {
   skills: Skill[];
   onEdit: (skill: Skill) => void;
   onDelete: (id: number) => void;
   onDeleteCategory?: (category: string) => void;
+  onUpdateCategory?: (oldName: string, newName: string, icon: string | null) => Promise<boolean>;
+  categoriesMeta?: CategoryMeta[];
 }
 
-const SkillsList = ({ skills, onEdit, onDelete, onDeleteCategory }: SkillsListProps) => {
+const SkillsList = ({
+  skills,
+  onEdit,
+  onDelete,
+  onDeleteCategory,
+  onUpdateCategory,
+  categoriesMeta = [],
+}: SkillsListProps) => {
   const groupedSkills = groupSkillsByCategory(skills);
 
   if (Object.keys(groupedSkills).length === 0) {
