@@ -6,6 +6,7 @@ import DesignProjects from "@/components/DesignProjects";
 import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
+import { Linkedin, Github, Mail } from "lucide-react";
 import { useProjectOrder } from "@/hooks/useProjectOrder";
 
 const Index = () => {
