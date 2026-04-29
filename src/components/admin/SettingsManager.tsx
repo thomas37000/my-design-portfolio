@@ -152,6 +152,57 @@ const SettingsManager = () => {
         </div>
       </div>
 
+      <div className="p-4 border rounded-lg space-y-4">
+        <div>
+          <h4 className="font-medium">Liens du footer</h4>
+          <p className="text-sm text-muted-foreground">
+            Configurez les liens LinkedIn, GitHub et Email affichés dans le footer.
+          </p>
+        </div>
+        <div className="space-y-3">
+          <div className="space-y-2">
+            <Label htmlFor="linkedin-url" className="flex items-center gap-2">
+              <Linkedin className="h-4 w-4" /> LinkedIn
+            </Label>
+            <Input
+              id="linkedin-url"
+              type="url"
+              placeholder="https://www.linkedin.com/in/..."
+              value={linkForm.linkedin}
+              onChange={(e) => setLinkForm({ ...linkForm, linkedin: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="github-url" className="flex items-center gap-2">
+              <Github className="h-4 w-4" /> GitHub
+            </Label>
+            <Input
+              id="github-url"
+              type="url"
+              placeholder="https://github.com/..."
+              value={linkForm.github}
+              onChange={(e) => setLinkForm({ ...linkForm, github: e.target.value })}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="email-link" className="flex items-center gap-2">
+              <Mail className="h-4 w-4" /> Email
+            </Label>
+            <Input
+              id="email-link"
+              type="email"
+              placeholder="contact@example.com"
+              value={linkForm.email}
+              onChange={(e) => setLinkForm({ ...linkForm, email: e.target.value })}
+            />
+          </div>
+        </div>
+        <Button onClick={handleSaveLinks} disabled={savingLinks}>
+          {savingLinks && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+          Enregistrer les liens
+        </Button>
+      </div>
+
       <div className="p-4 border rounded-lg bg-muted/50">
         <h4 className="font-medium mb-2">Aperçu du mode actuel</h4>
         <div className="flex gap-4 items-center">
