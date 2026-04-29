@@ -66,13 +66,27 @@ const SettingsManager = () => {
     setSavingOrder(false);
   };
 
-  if (loading || orderLoading) {
+  const handleSaveLinks = async () => {
+    setSavingLinks(true);
+    const success = await updateLinks(linkForm);
+    toast({
+      title: success ? "Liens mis à jour" : "Erreur",
+      description: success
+        ? "Les liens du footer ont été enregistrés."
+        : "Impossible de mettre à jour les liens.",
+      variant: success ? "default" : "destructive",
+    });
+    setSavingLinks(false);
+  };
+
+  if (loading || orderLoading || linksLoading) {
     return (
       <div className="flex items-center justify-center py-8">
         <Loader2 className="h-6 w-6 animate-spin text-primary" />
       </div>
     );
   }
+
 
   return (
     <div className="space-y-6">
