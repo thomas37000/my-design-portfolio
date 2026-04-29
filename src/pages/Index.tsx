@@ -29,8 +29,33 @@ const Index = () => {
       )}
       <Skills />
       <Contact />
-      <footer className="py-8 text-center text-muted-foreground border-t">
-        <p>© 2026 Portfolio réalisé par Thomas Chalanson. Tous droits réservés.</p>
+      <footer className="py-8 border-t">
+        <div className="flex flex-col items-center gap-4 text-muted-foreground">
+          <div className="flex items-center gap-4">
+            <a
+              href="#"
+              aria-label="LinkedIn"
+              className="p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+            >
+              <Linkedin className="w-5 h-5" />
+            </a>
+            <a
+              href="#"
+              aria-label="GitHub"
+              className="p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+            >
+              <Github className="w-5 h-5" />
+            </a>
+            <a
+              href="#"
+              aria-label="Email"
+              className="p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+            >
+              <Mail className="w-5 h-5" />
+            </a>
+          </div>
+          <p className="text-center">© 2026 Portfolio réalisé par Thomas Chalanson. Tous droits réservés.</p>
+        </div>
       </footer>
       <BackToTop />
     </div>
