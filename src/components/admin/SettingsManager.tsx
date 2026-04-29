@@ -1,17 +1,28 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDisplayMode, DisplayMode } from "@/hooks/useDisplayMode";
 import { useProjectOrder, ProjectOrder } from "@/hooks/useProjectOrder";
+import { useSocialLinks } from "@/hooks/useSocialLinks";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, LayoutGrid, GalleryHorizontal, Code2, Palette } from "lucide-react";
+import { Loader2, LayoutGrid, GalleryHorizontal, Code2, Palette, Linkedin, Github, Mail } from "lucide-react";
 
 const SettingsManager = () => {
   const { displayMode, loading, updateDisplayMode } = useDisplayMode();
   const { projectOrder, loading: orderLoading, updateProjectOrder } = useProjectOrder();
+  const { links, loading: linksLoading, updateLinks } = useSocialLinks();
   const [saving, setSaving] = useState(false);
   const [savingOrder, setSavingOrder] = useState(false);
+  const [savingLinks, setSavingLinks] = useState(false);
+  const [linkForm, setLinkForm] = useState({ linkedin: "", github: "", email: "" });
   const { toast } = useToast();
+
+  useEffect(() => {
+    setLinkForm(links);
+  }, [links]);
+
 
   const handleToggle = async () => {
     setSaving(true);
