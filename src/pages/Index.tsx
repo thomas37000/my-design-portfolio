@@ -8,9 +8,22 @@ import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
 import { Linkedin, Github, Mail } from "lucide-react";
 import { useProjectOrder } from "@/hooks/useProjectOrder";
+import { useSocialLinks } from "@/hooks/useSocialLinks";
 
 const Index = () => {
   const { projectOrder } = useProjectOrder();
+  const { links } = useSocialLinks();
+
+  const socials = [
+    { key: "linkedin", label: "LinkedIn", Icon: Linkedin, href: links.linkedin },
+    { key: "github", label: "GitHub", Icon: Github, href: links.github },
+    {
+      key: "email",
+      label: "Email",
+      Icon: Mail,
+      href: links.email ? `mailto:${links.email}` : "",
+    },
+  ];
 
   return (
     <div className="min-h-screen">
