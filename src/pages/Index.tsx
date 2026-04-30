@@ -6,24 +6,13 @@ import DesignProjects from "@/components/DesignProjects";
 import Skills from "@/components/Skills";
 import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
-import { Linkedin, Github, Mail } from "lucide-react";
+import DynamicIcon from "@/components/DynamicIcon";
 import { useProjectOrder } from "@/hooks/useProjectOrder";
 import { useSocialLinks } from "@/hooks/useSocialLinks";
 
 const Index = () => {
   const { projectOrder } = useProjectOrder();
   const { links } = useSocialLinks();
-
-  const socials = [
-    { key: "linkedin", label: "LinkedIn", Icon: Linkedin, href: links.linkedin },
-    { key: "github", label: "GitHub", Icon: Github, href: links.github },
-    {
-      key: "email",
-      label: "Email",
-      Icon: Mail,
-      href: links.email ? `mailto:${links.email}` : "",
-    },
-  ];
 
   return (
     <div className="min-h-screen">
@@ -46,20 +35,23 @@ const Index = () => {
       <footer className="py-8 border-t">
         <div className="flex flex-col items-center gap-4 text-muted-foreground">
           <div className="flex items-center gap-4">
-            {socials.map(({ key, label, Icon, href }) =>
-              href ? (
-                <a
-                  key={key}
-                  href={href}
-                  target={key === "email" ? undefined : "_blank"}
-                  rel={key === "email" ? undefined : "noopener noreferrer"}
-                  aria-label={label}
-                  className="p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
-                >
-                  <Icon className="w-5 h-5" />
-                </a>
-              ) : null
-            )}
+            {links
+              .filter((l) => l.url)
+              .map((link) => {
+                const isMail = link.url.startsWith("mailto:");
+                return (
+                  <a
+                    key={link.id}
+                    href={link.url}
+                    target={isMail ? undefined : "_blank"}
+                    rel={isMail ? undefined : "noopener noreferrer"}
+                    aria-label={link.label || link.icon}
+                    className="p-2 rounded-full hover:bg-primary hover:text-primary-foreground transition-colors"
+                  >
+                    <DynamicIcon name={link.icon} className="w-5 h-5" />
+                  </a>
+                );
+              })}
           </div>
           <p className="text-center">© 2026 Portfolio réalisé par Thomas Chalanson. Tous droits réservés.</p>
         </div>
