@@ -14,6 +14,7 @@ import SettingsManager from "@/components/admin/SettingsManager";
 import CVManager from "@/components/admin/CVManager";
 import ContentManager from "@/components/admin/ContentManager";
 import ImageManager from "@/components/admin/ImageManager";
+import ServicesManager from "@/components/admin/ServicesManager";
 
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
@@ -76,11 +77,12 @@ const Admin = () => {
         </div>
 
         <Tabs defaultValue="dev" className="w-full">
-          <TabsList className="grid w-full max-w-6xl grid-cols-8">
+          <TabsList className="grid w-full max-w-7xl grid-cols-9">
             <TabsTrigger value="dev">Projets Dev</TabsTrigger>
             <TabsTrigger value="design">Projets Design</TabsTrigger>
             <TabsTrigger value="images">Images</TabsTrigger>
             <TabsTrigger value="skills">Compétences</TabsTrigger>
+            <TabsTrigger value="services">Services</TabsTrigger>
             <TabsTrigger value="cv">CV</TabsTrigger>
             <TabsTrigger value="content">Contenu</TabsTrigger>
             <TabsTrigger value="messages" className="relative">
@@ -149,6 +151,20 @@ const Admin = () => {
               </CardContent>
             </Card>
           </TabsContent>
+          <TabsContent value="services" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Services</CardTitle>
+                <CardDescription>
+                  Ajoutez, modifiez ou supprimez les prestations affichées dans la section Services
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ServicesManager />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
 
           <TabsContent value="cv" className="mt-6">
             <Card>

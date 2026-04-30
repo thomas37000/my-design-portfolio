@@ -575,6 +575,45 @@ export type Database = {
         }
         Relationships: []
       }
+      services: {
+        Row: {
+          created_at: string
+          description: string
+          display_order: number
+          features: Json
+          icon: string
+          id: string
+          price: string
+          technos: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string
+          display_order?: number
+          features?: Json
+          icon?: string
+          id?: string
+          price?: string
+          technos?: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          display_order?: number
+          features?: Json
+          icon?: string
+          id?: string
+          price?: string
+          technos?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           created_at: string
