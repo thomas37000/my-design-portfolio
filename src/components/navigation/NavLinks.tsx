@@ -25,6 +25,7 @@ export const navLinks: NavLink[] = [
     ]
   },
   { id: "skills", label: "Compétences" },
+  { id: "services", label: "Services" },
   { id: "contact", label: "Contact" },
 ];
 

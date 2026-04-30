@@ -4,6 +4,7 @@ import About from "@/components/About";
 import Projects from "@/components/Projects";
 import DesignProjects from "@/components/DesignProjects";
 import Skills from "@/components/Skills";
+import Services from "@/components/Services";
 import Contact from "@/components/Contact";
 import BackToTop from "@/components/BackToTop";
 import DynamicIcon from "@/components/DynamicIcon";
@@ -31,6 +32,7 @@ const Index = () => {
         </>
       )}
       <Skills />
+      <Services />
       <Contact />
       <footer className="py-8 border-t">
         <div className="flex flex-col items-center gap-4 text-muted-foreground">
