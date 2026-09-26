@@ -27,7 +27,7 @@ const DesignProjectCard = ({
   return (
     <Card 
       className="overflow-hidden group cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-2"
-      onClick={() => navigate(`/projet/${id}`)}
+      onClick={() => navigate(`/projet/${slugify(titre) || id}`)}
     >
       <div className="relative overflow-hidden aspect-video">
         <img
