@@ -68,6 +68,7 @@ export function useSectionHashScroll() {
     return () => {
       disposed = true;
       timers.forEach(clearTimeout);
+      events.forEach((event) => window.removeEventListener(event, markUserScroll));
     };
   }, [hash, pathname]);
 }
