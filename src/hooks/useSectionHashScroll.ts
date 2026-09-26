@@ -25,6 +25,13 @@ export function useSectionHashScroll() {
     const timers: ReturnType<typeof setTimeout>[] = [];
     let disposed = false;
     let attempts = 0;
+    let userScrolled = false;
+
+    const markUserScroll = () => {
+      userScrolled = true;
+    };
+    const events: (keyof WindowEventMap)[] = ["wheel", "touchstart", "keydown"];
+    events.forEach((event) => window.addEventListener(event, markUserScroll, { passive: true }));
 
     const scrollToSection = () => {
       if (disposed) return;
