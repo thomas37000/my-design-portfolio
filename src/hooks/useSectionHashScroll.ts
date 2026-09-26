@@ -4,6 +4,10 @@ import { useLocation } from "react-router-dom";
 const HEADER_OFFSET = 88;
 const MAX_ATTEMPTS = 80;
 const POLL_INTERVAL = 50;
+// Layout keeps shifting while images and animations settle, so the position
+// is re-checked a few times after the first jump.
+const CORRECTION_DELAYS = [300, 800];
+const TOLERANCE = 80;
 
 /**
  * Scrolls to the section matching the current URL hash once that section
@@ -18,24 +22,46 @@ export function useSectionHashScroll() {
     const id = decodeURIComponent(hash.replace(/^#/, ""));
     if (!id) return;
 
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    let disposed = false;
     let attempts = 0;
-    let timer: ReturnType<typeof setTimeout>;
 
     const scrollToSection = () => {
+      if (disposed) return;
       const element = document.getElementById(id);
-      if (element) {
-        const top = element.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
-        window.scrollTo({ top: Math.max(top, 0), behavior: "smooth" });
+      if (!element) {
+        if (attempts++ < MAX_ATTEMPTS) {
+          timers.push(setTimeout(scrollToSection, POLL_INTERVAL));
+        }
         return;
       }
-      if (attempts++ < MAX_ATTEMPTS) {
-        timer = setTimeout(scrollToSection, POLL_INTERVAL);
+
+      const top = element.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+      window.scrollTo({ top: Math.max(top, 0), behavior: "instant" as ScrollBehavior });
+    };
+
+    const correctPosition = () => {
+      if (disposed) return;
+      const element = document.getElementById(id);
+      if (!element) return;
+      const offset = element.getBoundingClientRect().top - HEADER_OFFSET;
+      if (Math.abs(offset) > TOLERANCE) {
+        window.scrollTo({
+          top: Math.max(window.scrollY + offset, 0),
+          behavior: "instant" as ScrollBehavior,
+        });
       }
     };
 
     scrollToSection();
+    CORRECTION_DELAYS.forEach((delay) =>
+      timers.push(setTimeout(correctPosition, delay))
+    );
 
-    return () => clearTimeout(timer);
+    return () => {
+      disposed = true;
+      timers.forEach(clearTimeout);
+    };
   }, [hash, pathname]);
 }
 
