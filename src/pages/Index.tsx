@@ -11,19 +11,10 @@ import DynamicIcon from "@/components/DynamicIcon";
 import { useProjectOrder } from "@/hooks/useProjectOrder";
 import { useSocialLinks } from "@/hooks/useSocialLinks";
 import { useSectionHashScroll } from "@/hooks/useSectionHashScroll";
-import { useLocation } from "react-router-dom";
-
-interface IndexLocationState {
-  skipDesignProjectsAnimation?: boolean;
-}
 
 const Index = () => {
-  const location = useLocation();
   const { projectOrder } = useProjectOrder();
   const { links } = useSocialLinks();
-  const disableDesignProjectsAnimation = Boolean(
-    (location.state as IndexLocationState | null)?.skipDesignProjectsAnimation
-  );
   useSectionHashScroll();
 
   return (
@@ -34,11 +25,11 @@ const Index = () => {
       {projectOrder === "dev-first" ? (
         <>
           <Projects />
-          <DesignProjects disableEntranceAnimation={disableDesignProjectsAnimation} />
+          <DesignProjects />
         </>
       ) : (
         <>
-          <DesignProjects disableEntranceAnimation={disableDesignProjectsAnimation} />
+          <DesignProjects />
           <Projects />
         </>
       )}

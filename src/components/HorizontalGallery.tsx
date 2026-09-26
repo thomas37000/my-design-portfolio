@@ -9,10 +9,9 @@ interface HorizontalGalleryProps {
   title: string;
   className?: string;
   id?: string;
-  disableEntranceAnimation?: boolean;
 }
 
-const HorizontalGallery = ({ children, title, className = "", id, disableEntranceAnimation = false }: HorizontalGalleryProps) => {
+const HorizontalGallery = ({ children, title, className = "", id }: HorizontalGalleryProps) => {
   const sectionRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLDivElement>(null);
   const galleryRef = useRef<HTMLDivElement>(null);
@@ -27,24 +26,22 @@ const HorizontalGallery = ({ children, title, className = "", id, disableEntranc
     }, 100);
 
     const ctx = gsap.context(() => {
-      if (!disableEntranceAnimation) {
-        // Title animation
-        gsap.fromTo(
-          titleRef.current,
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 0.8,
-            ease: "power3.out",
-            scrollTrigger: {
-              trigger: sectionRef.current,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      }
+      // Title animation
+      gsap.fromTo(
+        titleRef.current,
+        { opacity: 0, y: 50 },
+        {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: sectionRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
 
       // Horizontal scroll animation
       const galleryWidth = galleryRef.current!.scrollWidth;
@@ -68,38 +65,36 @@ const HorizontalGallery = ({ children, title, className = "", id, disableEntranc
         });
       }
 
-      if (!disableEntranceAnimation) {
-        // Animate each card on scroll
-        const cards = galleryRef.current!.children;
-        gsap.fromTo(
-          cards,
-          { opacity: 0.5, scale: 0.9 },
-          {
-            opacity: 1,
-            scale: 1,
-            stagger: 0.1,
-            duration: 0.5,
-            scrollTrigger: {
-              trigger: triggerRef.current,
-              start: "top 80%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      }
+      // Animate each card on scroll
+      const cards = galleryRef.current!.children;
+      gsap.fromTo(
+        cards,
+        { opacity: 0.5, scale: 0.9 },
+        {
+          opacity: 1,
+          scale: 1,
+          stagger: 0.1,
+          duration: 0.5,
+          scrollTrigger: {
+            trigger: triggerRef.current,
+            start: "top 80%",
+            toggleActions: "play none none reverse",
+          },
+        }
+      );
     }, sectionRef);
 
     return () => {
       clearTimeout(timeout);
       ctx.revert();
     };
-  }, [children, disableEntranceAnimation]);
+  }, [children]);
 
   return (
     <section ref={sectionRef} id={id} className={`relative ${className}`}>
       <div className="py-20">
         <div className="container mx-auto px-4 mb-8">
-          <h2 ref={titleRef} className={`text-4xl font-bold text-center ${disableEntranceAnimation ? "opacity-100" : "opacity-0"}`}>
+          <h2 ref={titleRef} className="text-4xl font-bold text-center opacity-0">
             {title}
           </h2>
         </div>

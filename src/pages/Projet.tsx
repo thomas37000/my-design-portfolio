@@ -107,7 +107,7 @@ const Projet = () => {
         <Navigation />
         <div className="container mx-auto px-4 py-20 text-center">
           <h1 className="text-2xl font-bold mb-4">Projet non trouvé</h1>
-          <Button onClick={() => navigate("/#design-projects", { state: { skipDesignProjectsAnimation: true } })}>
+          <Button onClick={() => navigate("/")}>
             <ArrowLeft className="mr-2 h-4 w-4" />
             Retour à l'accueil
           </Button>
@@ -124,7 +124,7 @@ const Projet = () => {
       <main className="container mx-auto px-4 py-20">
         <Button
           variant="ghost"
-          onClick={() => navigate("/#design-projects", { state: { skipDesignProjectsAnimation: true } })}
+          onClick={() => navigate("/#design-projects")}
           className="mb-8 gap-2"
         >
           <ArrowLeft className="h-4 w-4" />
