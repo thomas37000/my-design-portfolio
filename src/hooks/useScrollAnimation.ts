@@ -14,10 +14,11 @@ interface AnimationConfig {
 
 export const useScrollAnimation = (
   containerRef: RefObject<HTMLElement | null>,
-  animations: AnimationConfig[]
+  animations: AnimationConfig[],
+  enabled = true
 ) => {
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!containerRef.current || !enabled) return;
 
     const ctx = gsap.context(() => {
       animations.forEach(({ ref, from, to, triggerRef, start = "top 85%" }) => {
@@ -35,5 +36,5 @@ export const useScrollAnimation = (
     }, containerRef);
 
     return () => ctx.revert();
-  }, [containerRef, animations]);
+  }, [containerRef, animations, enabled]);
 };
