@@ -7,7 +7,11 @@ import ProjectsGrid from "./ProjectsGrid";
 import { useDisplayMode } from "@/hooks/useDisplayMode";
 import { useIsMobile } from "@/hooks/use-mobile";
 
-const DesignProjects = () => {
+interface DesignProjectsProps {
+  disableEntranceAnimation?: boolean;
+}
+
+const DesignProjects = ({ disableEntranceAnimation = false }: DesignProjectsProps) => {
   const [projects, setProjects] = useState<Designer_project[]>([]);
   const [loading, setLoading] = useState(true);
   const { displayMode, loading: modeLoading } = useDisplayMode();
@@ -57,14 +61,14 @@ const DesignProjects = () => {
   // Force horizontal gallery on mobile, use grid only on desktop when setting is "grid"
   if (displayMode === "grid" && !isMobile) {
     return (
-      <ProjectsGrid id="design-projects" title="Projets Web Design" className="bg-muted/30">
+      <ProjectsGrid id="design-projects" title="Projets Web Design" className="bg-muted/30" disableEntranceAnimation={disableEntranceAnimation}>
         {projectCards}
       </ProjectsGrid>
     );
   }
 
   return (
-    <HorizontalGallery id="design-projects" title="Projets Web Design" className="bg-muted/30">
+    <HorizontalGallery id="design-projects" title="Projets Web Design" className="bg-muted/30" disableEntranceAnimation={disableEntranceAnimation}>
       {projectCards}
     </HorizontalGallery>
   );
