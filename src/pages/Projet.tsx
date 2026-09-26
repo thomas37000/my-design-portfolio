@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ExternalLink } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import ImageSlider from "@/components/project/ImageSlider";
+import { slugify } from "@/lib/slugify";
 
 interface DesignerProject {
   id: number;
@@ -35,16 +36,34 @@ const Projet = () => {
 
   async function fetchProject() {
     try {
+      // Numeric id: direct lookup
+      if (/^\d+$/.test(id!)) {
+        const { data, error } = await supabase
+          .from("designer_projects")
+          .select("*")
+          .eq("id", parseInt(id!))
+          .single();
+
+        if (error) {
+          console.error(error);
+        } else {
+          setProject(data as unknown as DesignerProject);
+        }
+        return;
+      }
+
+      // Slug: match against slugified titre
       const { data, error } = await supabase
         .from("designer_projects")
-        .select("*")
-        .eq("id", parseInt(id!))
-        .single();
+        .select("*");
 
       if (error) {
         console.error(error);
       } else {
-        setProject(data as unknown as DesignerProject);
+        const match = (data as any[]).find(
+          (p) => slugify(p.titre || "") === id
+        );
+        if (match) setProject(match as unknown as DesignerProject);
       }
     } catch (error) {
       console.error(error);
