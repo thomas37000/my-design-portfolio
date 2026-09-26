@@ -48,7 +48,7 @@ export function useSectionHashScroll() {
     };
 
     const correctPosition = () => {
-      if (disposed) return;
+      if (disposed || userScrolled) return;
       const element = document.getElementById(id);
       if (!element) return;
       const offset = element.getBoundingClientRect().top - HEADER_OFFSET;
