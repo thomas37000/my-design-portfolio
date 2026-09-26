@@ -10,10 +10,12 @@ import BackToTop from "@/components/BackToTop";
 import DynamicIcon from "@/components/DynamicIcon";
 import { useProjectOrder } from "@/hooks/useProjectOrder";
 import { useSocialLinks } from "@/hooks/useSocialLinks";
+import { useSectionHashScroll } from "@/hooks/useSectionHashScroll";
 
 const Index = () => {
   const { projectOrder } = useProjectOrder();
   const { links } = useSocialLinks();
+  useSectionHashScroll();
 
   return (
     <div className="min-h-screen">
