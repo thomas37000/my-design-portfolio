@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Card } from "./ui/card";
+import { slugify } from "@/lib/slugify";
 
 interface DesignProjectCardProps {
   id: number;
